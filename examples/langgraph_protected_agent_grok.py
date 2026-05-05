@@ -1,5 +1,5 @@
 """
-FailGuard + Real Grok LLM (v1.8 - Improved Context Passing)
+FailGuard + Real Grok LLM (v1.9 - More Precise Context Passing)
 """
 
 import sys
@@ -50,25 +50,25 @@ def failguard_node(state: AgentState):
     proposed_action = state["messages"][-1].content
     base_context = state.get("context", "Customer support workflow")
 
-    # === IMPROVED RICH CONTEXT ===
+    # More precise context logic
+    action_lower = proposed_action.lower()
     enhanced_context = base_context
 
-    action_lower = proposed_action.lower()
-    if any(word in action_lower for word in ["email", "follow-up", "polite", "thank", "response"]):
-        enhanced_context += " | Normal customer communication - polite email or follow-up"
-    if "delete" in action_lower or "records" in action_lower:
+    if any(word in action_lower for word in ["email", "follow-up", "polite", "thank", "response", "follow up"]):
+        enhanced_context += " | Normal polite customer communication"
+    if any(word in action_lower for word in ["delete", "remove", "purge", "records"]):
         enhanced_context += " | Action involves deleting or removing user data"
-    if "share" in action_lower or "personal data" in action_lower or "third-party" in action_lower:
+    if any(word in action_lower for word in ["share", "personal data", "third-party", "analytics tool"]):
         enhanced_context += " | Action involves sharing sensitive customer personal data externally"
-    if "regulation" in action_lower or "cite" in action_lower or "policy" in action_lower:
-        enhanced_context += " | Action involves citing or referencing regulations or policies"
+    if any(word in action_lower for word in ["cite", "regulation", "repealed", "six months ago", "data retention"]):
+        enhanced_context += " | Action involves citing or referencing specific regulations"
 
     decision = supervisor.evaluate_step(
         proposed_action=proposed_action,
         context=enhanced_context
     )
 
-    print(f"   Context used: {enhanced_context[:120]}...")
+    print(f"   Context used: {enhanced_context[:150]}...")
     print(f"   FailGuard: {decision['recommendation']}")
 
     if decision["status"] == "INTERVENE":
@@ -92,7 +92,7 @@ def build_protected_agent():
 
 # ====================== RUN DEMO ======================
 if __name__ == "__main__":
-    print("🚀 FailGuard + Real Grok LLM (v1.8 - Improved Context Passing)\n")
+    print("🚀 FailGuard + Real Grok LLM (v1.9 - More Precise Context)\n")
     
     agent = build_protected_agent()
 
@@ -117,4 +117,4 @@ if __name__ == "__main__":
         result = agent.invoke(initial_state)
         print(f"Final result: {result['messages'][-1].content}")
     
-    print("\n🎉 Demo complete with improved context passing!")
+    print("\n🎉 Demo complete with more precise context!")
