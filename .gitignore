@@ -1,0 +1,65 @@
+# Ignore Microsoft Word files" 
+*.docx" 
+*.~$*" 
+*.tmp" 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.venv
+venv/
+ENV/
+env/
+.env
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.tmp
+*.temp
+data/raw/
+data/processed/
+*.docx
+*.bak
+temp-backup/
+
+# Credentials (never commit these)
+*.env
+secrets.json
+api_keys.py
+
+# Large files
+*.faiss
+*.index
+*.bin
+*.pt

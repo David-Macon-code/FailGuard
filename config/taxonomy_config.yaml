@@ -1,0 +1,84 @@
+# FailGuard Hybrid AI Failure Taxonomy
+# Synthesized from David's two courses (May 2026)
+# Version: 1.0
+
+version: "1.0"
+last_updated: "2026-05-05"
+source: "David Macon's AI Failure Taxonomy courses + Microsoft Agentic Taxonomy + MIT Risk Repository"
+
+categories:
+  - name: Foundations
+    description: Core definitions, history, and distinctions (failure vs limitation vs misuse)
+    sub_modes:
+      - name: What counts as an AI failure
+        description: Any outcome that is harmful, incorrect, unjust, or misaligned with intent — even if the system behaved as designed
+        enterprise_impact: "If you can't name it, you can't fix it or budget for it."
+        legal_notes: "Establishes baseline for reasonable care and liability"
+
+      - name: Failure vs limitation vs misuse
+        description: Clear distinction between system faults, capability gaps, and human misapplication
+        enterprise_impact: "Prevents wasting engineering time on the wrong problem"
+        legal_notes: "Critical for distinguishing product liability from user error"
+
+  - name: Data Failures
+    description: Issues originating from training/evaluation data
+    sub_modes:
+      - name: Data quality and labeling errors
+        enterprise_impact: "Ask where the training data came from and how it was labeled before you sign."
+      - name: Distribution shift
+        enterprise_impact: "A slow leak you may not notice until it's expensive."
+      - name: Data poisoning and backdoor attacks
+        enterprise_impact: "Know what to demand from vendors about data security and validation."
+      - name: Representation and sampling bias
+        enterprise_impact: "If your AI doesn't represent your customers, it will fail your customers."
+
+  - name: Model Failures
+    description: Issues in model training, architecture, or behavior
+    sub_modes:
+      - name: Overfitting, underfitting, and generalization failures
+        enterprise_impact: "A model that only works in the lab is one you paid for but can't use."
+      - name: Specification gaming and reward hacking
+        enterprise_impact: "You told the AI to reduce ticket volume. It closed tickets without resolving them."
+      - name: Hallucination and confabulation
+        enterprise_impact: "Your AI cited a regulation that was repealed — confidently. That's a liability event."
+      - name: Calibration failures
+        enterprise_impact: "If 95% confident means wrong one in three times, someone is making decisions on a broken signal."
+
+  - name: Systemic and Emergent Failures
+    description: Failures that appear at scale or through interactions
+    sub_modes:
+      - name: Emergent and unpredictable behaviors
+        enterprise_impact: "The AI worked fine in the pilot. Build that reality into deployment planning."
+      - name: Multi-agent failure cascades
+        enterprise_impact: "Do you know where your chain breaks?"
+      - name: Goal misspecification and misalignment
+        enterprise_impact: "Is your AI chasing your goals or just the proxy you gave it?"
+
+  - name: Deployment and Societal Failures
+    description: Failures caused by context, deployment, or societal impact
+    sub_modes:
+      - name: Failure modes in high-stakes domains
+        enterprise_impact: "Regulators are already looking for this. Can you show you took the risks seriously?"
+      - name: Feedback loops and model collapse
+        enterprise_impact: "What is in your retraining data, and how much of it reflects the model's own past outputs?"
+      - name: Security vulnerabilities and adversarial attacks
+        enterprise_impact: "Your AI is a new attack surface. Have you included it in your threat model?"
+
+  - name: Legal and Compliance
+    description: Mapping failures to regulatory exposure
+    sub_modes:
+      - name: Colorado AI Act / California ADMT exposure
+        enterprise_impact: "Up to $20k per violation + mandatory impact assessments and human review."
+      - name: EU AI Act high-risk obligations
+        enterprise_impact: "Conformity assessment deadline August 2026 — start now."
+      - name: FTC Section 5 enforcement
+        enterprise_impact: "AI washing and algorithmic harm are already enforceable."
+
+# Fields available for every failure mode in FailGuard
+fields:
+  - name: enterprise_impact
+  - name: legal_notes
+  - name: mitigation_ideas
+  - name: detection_signatures
+  - name: multidimensional_dimensions
+    description: "Links to latent space / trajectory mapping (future extension)"

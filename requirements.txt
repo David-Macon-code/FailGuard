@@ -1,0 +1,20 @@
+# Core dependencies for FailGuard
+langgraph>=0.2.0
+langchain-openai>=0.2.0
+langchain-community>=0.3.0
+faiss-cpu>=1.0.0
+sentence-transformers>=3.0.0
+pyyaml>=6.0
+streamlit>=1.38.0          # Optional UI later
+pandas>=2.0.0             # For trajectory analysis
+numpy>=1.26.0
+
+# Development & Testing
+pytest>=8.0.0
+black>=24.0.0             # Code formatting
+isort>=5.0.0
+flake8>=7.0.0
+
+# Optional but recommended
+langsmith>=0.1.0          # Observability
+python-dotenv>=1.0.0      # For API keys
