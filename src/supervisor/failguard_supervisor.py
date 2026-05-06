@@ -1,82 +1,85 @@
 """
-FailGuard Supervisor - The Prevention Engine
-Monitors agent trajectories in real time using taxonomy + multidimensional mapping.
+FailGuard Supervisor - Protected Version
+Loads the real hidden taxonomy (taxonomy_config.yaml.real) first, then falls back to sample.
 """
 
-import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
-from src.core.taxonomy import FailGuardTaxonomy
-from src.core.mapper import MultidimensionalMapper
-from typing import Dict, Any, Optional
+import yaml
+from sentence_transformers import SentenceTransformer
+import faiss
+import numpy as np
+from typing import Dict, List, Any
 
 class FailGuardSupervisor:
-    def __init__(self, drift_threshold: float = 0.45):
+    def __init__(self, drift_threshold: float = 1.3651):
         print("🚀 Initializing FailGuard Supervisor...")
-        self.taxonomy = FailGuardTaxonomy()
-        self.mapper = MultidimensionalMapper()
+        
+        # === PROTECTED TAXONOMY LOADING ===
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        real_taxonomy_path = os.path.join(base_dir, "../../config/taxonomy_config.yaml.real")
+        sample_taxonomy_path = os.path.join(base_dir, "../../config/taxonomy_config.yaml.sample")
+        
+        if os.path.exists(real_taxonomy_path):
+            taxonomy_path = real_taxonomy_path
+            print("✅ Loaded protected real taxonomy")
+        else:
+            taxonomy_path = sample_taxonomy_path
+            print("⚠️  Loaded public sample taxonomy (real file not found on this machine)")
+        
+        # Load taxonomy
+        with open(taxonomy_path, "r", encoding="utf-8") as f:
+            self.config = yaml.safe_load(f)
+        
         self.drift_threshold = drift_threshold
-        self.trajectory_history = []
+        self.taxonomy = self.config.get("failure_modes", [])
+        
+        print(f"✅ Loaded FailGuard Taxonomy v1.0")
+        print(f"📊 Loaded {len(self.taxonomy)} failure modes across categories")
+        
+        # Load local embedding model
+        print("🔧 Loading upgraded local embedding model (all-mpnet-base-v2)...")
+        self.embedding_model = SentenceTransformer('all-mpnet-base-v2')
+        
+        # Build failure mode index
+        self._build_failure_index()
+        
         print("✅ FailGuard Supervisor ready for real-time prevention")
 
+    def _build_failure_index(self):
+        texts = [mode["description"] for mode in self.taxonomy]
+        self.embeddings = self.embedding_model.encode(texts)
+        self.index = faiss.IndexFlatL2(self.embeddings.shape[1])
+        self.index.add(self.embeddings.astype(np.float32))
+        self.failure_texts = texts
+
     def evaluate_step(self, proposed_action: str, context: str = "") -> Dict[str, Any]:
-        """
-        Evaluate the next proposed action / trajectory step.
-        Returns a decision: OK, WARN, or INTERVENE.
-        """
-        # Build current trajectory text
-        trajectory_text = f"CONTEXT: {context}\nPROPOSED ACTION: {proposed_action}"
+        full_text = f"Context: {context}\nAction: {proposed_action}"
+        query_embedding = self.embedding_model.encode([full_text])
         
-        # Detect drift in high-dimensional space
-        drift_result = self.mapper.detect_drift(trajectory_text, self.drift_threshold)
+        # Search for nearest failure mode
+        distances, indices = self.index.search(query_embedding.astype(np.float32), 1)
+        distance = float(distances[0][0])
+        closest_idx = int(indices[0][0])
         
-        # Get enterprise impact and legal notes
-        impact = self.taxonomy.get_enterprise_impact(drift_result.get("closest_failure", ""))
-        legal = self.taxonomy.get_legal_notes(drift_result.get("closest_failure", ""))
+        closest_mode = self.taxonomy[closest_idx]
         
-        decision = {
-            "status": "INTERVENE" if drift_result["is_drifting"] else "OK",
-            "closest_failure": drift_result["closest_failure"],
-            "category": drift_result["category"],
-            "distance": drift_result["distance"],
-            "enterprise_impact": impact,
-            "legal_notes": legal,
-            "recommendation": (
-                "⚠️  HIGH RISK - Intervene immediately" if drift_result["is_drifting"]
-                else "✅ Safe to proceed"
-            )
+        is_high_risk = distance < self.drift_threshold
+        
+        if is_high_risk:
+            recommendation = "⚠️ HIGH RISK - Intervene immediately"
+            status = "INTERVENE"
+        else:
+            recommendation = "✅ Safe to proceed"
+            status = "SAFE"
+        
+        return {
+            "status": status,
+            "recommendation": recommendation,
+            "closest_failure": closest_mode["name"],
+            "distance": round(distance, 4),
+            "context_used": context[:150] + "..." if len(context) > 150 else context
         }
-        
-        # Log to history
-        self.trajectory_history.append({
-            "action": proposed_action,
-            "decision": decision
-        })
-        
-        return decision
 
-    def get_history(self) -> list:
-        """Return full trajectory decision history."""
-        return self.trajectory_history
-
-
-# Quick demo / test
-if __name__ == "__main__":
-    supervisor = FailGuardSupervisor()
-    
-    print("\n🧪 Testing FailGuard Supervisor...\n")
-    
-    test_cases = [
-        "The agent plans to call a tool that deletes user data without any confirmation step.",
-        "The agent confidently cites a regulation that was repealed last year.",
-        "The agent is about to send a polite email to the customer."
-    ]
-    
-    for i, action in enumerate(test_cases, 1):
-        print(f"Test {i}: {action[:80]}...")
-        result = supervisor.evaluate_step(action)
-        print(f"   → {result['recommendation']}")
-        print(f"   Closest failure: {result['closest_failure']}\n")
-    
-    print("✅ Supervisor test complete!")
+    # Optional helper methods
+    def get_categories(self):
+        return list(set(mode["category"] for mode in self.taxonomy))
