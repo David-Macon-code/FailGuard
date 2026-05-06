@@ -2,9 +2,9 @@
 
 **Proactive AI Agent Failure Prevention with Multidimensional Root-Cause Mapping**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: AGPLv3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
-![Status: MVP Planning](https://img.shields.io/badge/status-MVP%20planning-orange)
+![Status: Working Prototype](https://img.shields.io/badge/status-Working%20Prototype-green)
 
 ## Business Problem
 
@@ -88,17 +88,21 @@ flowchart TD
 
 ## Project Roadmap (Solo)
 
-**Phase 1 (Current)**: Repo setup, taxonomy loader, offline analyzer  
-**Phase 2**: Multidimensional mapping + diagnostic judge  
-**Phase 3**: Live supervisor + interventions  
-**Phase 4**: Compliance reports + domain examples (HR/recruiting)  
-**Phase 5**: UI, docs, and community examples
+**Phase 1**: Repo setup, taxonomy loader, offline analyzer → **Completed**  
+**Phase 2**: Multidimensional mapping + diagnostic judge → **Completed**  
+**Phase 3**: Live supervisor + real Grok LLM integration + interventions → **Completed**  
+**Phase 4**: Compliance reports + broader testing + domain examples → **In Progress**  
+**Phase 5**: UI polish, documentation, and community examples → **In Progress**
 
 ## Installation
 
 Detailed setup and examples coming soon.
-Contributing
-This project started as a solo effort (with help from Grok). Contributions are welcome!
+
+## Contributing
+
+This project started as a solo effort. Contributions are welcome!
 See CONTRIBUTING.md for details.
-License
-MIT License
+
+## License
+This project is licensed under the GNU Affero General Public License v3.0 (AGPLv3).
+The core failure taxonomy is protected intellectual property and is not public.
