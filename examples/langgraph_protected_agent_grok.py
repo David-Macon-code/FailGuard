@@ -1,5 +1,5 @@
 """
-FailGuard + Real Grok LLM (v1.9 - More Precise Context Passing)
+FailGuard + Real Grok LLM (v2.0 - Advanced Context Refinement)
 """
 
 import sys
@@ -28,6 +28,31 @@ class AgentState(TypedDict):
     messages: Annotated[List, operator.add]
     context: str
 
+# ====================== ADVANCED CONTEXT BUILDER ======================
+def build_rich_context(proposed_action: str, base_context: str = "Customer support workflow") -> str:
+    action_lower = proposed_action.lower()
+    parts = [base_context]
+
+    # Action type classification
+    if any(w in action_lower for w in ["email", "follow-up", "polite", "thank", "response", "follow up"]):
+        parts.append("NORMAL_COMMUNICATION")
+    if any(w in action_lower for w in ["delete", "remove", "purge", "erase", "bulk delete", "records"]):
+        parts.append("HIGH_RISK_DATA_DELETION")
+    if any(w in action_lower for w in ["share", "send", "export", "third-party", "analytics", "personal data", "customer data"]):
+        parts.append("HIGH_RISK_DATA_SHARING")
+    if any(w in action_lower for w in ["cite", "regulation", "policy", "law", "rule", "retention"]):
+        parts.append("REGULATION_CITATION")
+    if any(w in action_lower for w in ["refund", "credit", "payment", "financial"]):
+        parts.append("FINANCIAL_DECISION")
+    if any(w in action_lower for w in ["book", "meeting", "schedule", "appointment"]):
+        parts.append("NORMAL_SCHEDULING")
+
+    # Safety signals
+    if "without confirmation" in action_lower or "immediately" in action_lower or "right now" in action_lower:
+        parts.append("NO_CONFIRMATION_REQUESTED")
+
+    return " | ".join(parts)
+
 # ====================== NODES ======================
 def grok_agent_node(state: AgentState):
     context = state.get("context", "Customer support workflow")
@@ -48,27 +73,14 @@ Respond with ONLY the single action you want to take. Be concise."""
 
 def failguard_node(state: AgentState):
     proposed_action = state["messages"][-1].content
-    base_context = state.get("context", "Customer support workflow")
-
-    # More precise context logic
-    action_lower = proposed_action.lower()
-    enhanced_context = base_context
-
-    if any(word in action_lower for word in ["email", "follow-up", "polite", "thank", "response", "follow up"]):
-        enhanced_context += " | Normal polite customer communication"
-    if any(word in action_lower for word in ["delete", "remove", "purge", "records"]):
-        enhanced_context += " | Action involves deleting or removing user data"
-    if any(word in action_lower for word in ["share", "personal data", "third-party", "analytics tool"]):
-        enhanced_context += " | Action involves sharing sensitive customer personal data externally"
-    if any(word in action_lower for word in ["cite", "regulation", "repealed", "six months ago", "data retention"]):
-        enhanced_context += " | Action involves citing or referencing specific regulations"
+    rich_context = build_rich_context(proposed_action, state.get("context", "Customer support workflow"))
 
     decision = supervisor.evaluate_step(
         proposed_action=proposed_action,
-        context=enhanced_context
+        context=rich_context
     )
 
-    print(f"   Context used: {enhanced_context[:150]}...")
+    print(f"   Context used: {rich_context[:180]}...")
     print(f"   FailGuard: {decision['recommendation']}")
 
     if decision["status"] == "INTERVENE":
@@ -92,7 +104,7 @@ def build_protected_agent():
 
 # ====================== RUN DEMO ======================
 if __name__ == "__main__":
-    print("🚀 FailGuard + Real Grok LLM (v1.9 - More Precise Context)\n")
+    print("🚀 FailGuard + Real Grok LLM (v2.0 - Advanced Context Refinement)\n")
     
     agent = build_protected_agent()
 
@@ -117,4 +129,4 @@ if __name__ == "__main__":
         result = agent.invoke(initial_state)
         print(f"Final result: {result['messages'][-1].content}")
     
-    print("\n🎉 Demo complete with more precise context!")
+    print("\n🎉 Demo complete with advanced context refinement!")
