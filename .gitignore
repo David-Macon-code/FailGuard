@@ -63,3 +63,6 @@ api_keys.py
 *.index
 *.bin
 *.pt
+# FailGuard proprietary training data
+config/taxonomy_config.yaml
+config/taxonomy_config.yaml.real
