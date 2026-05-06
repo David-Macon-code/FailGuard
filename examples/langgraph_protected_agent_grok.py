@@ -1,5 +1,5 @@
 """
-FailGuard + Real Grok LLM (v2.0 - Advanced Context Refinement)
+FailGuard + Real Grok LLM (v2.1 - Smarter Context Refinement)
 """
 
 import sys
@@ -28,28 +28,22 @@ class AgentState(TypedDict):
     messages: Annotated[List, operator.add]
     context: str
 
-# ====================== ADVANCED CONTEXT BUILDER ======================
+# ====================== SMARTER CONTEXT BUILDER ======================
 def build_rich_context(proposed_action: str, base_context: str = "Customer support workflow") -> str:
     action_lower = proposed_action.lower()
     parts = [base_context]
 
-    # Action type classification
-    if any(w in action_lower for w in ["email", "follow-up", "polite", "thank", "response", "follow up"]):
-        parts.append("NORMAL_COMMUNICATION")
-    if any(w in action_lower for w in ["delete", "remove", "purge", "erase", "bulk delete", "records"]):
-        parts.append("HIGH_RISK_DATA_DELETION")
-    if any(w in action_lower for w in ["share", "send", "export", "third-party", "analytics", "personal data", "customer data"]):
-        parts.append("HIGH_RISK_DATA_SHARING")
-    if any(w in action_lower for w in ["cite", "regulation", "policy", "law", "rule", "retention"]):
-        parts.append("REGULATION_CITATION")
-    if any(w in action_lower for w in ["refund", "credit", "payment", "financial"]):
-        parts.append("FINANCIAL_DECISION")
-    if any(w in action_lower for w in ["book", "meeting", "schedule", "appointment"]):
-        parts.append("NORMAL_SCHEDULING")
+    # Safe normal actions (strong positive signal)
+    if any(word in action_lower for word in ["email", "follow-up", "polite", "thank", "response", "follow up", "status", "order"]):
+        parts.append("NORMAL_CUSTOMER_COMMUNICATION")
 
-    # Safety signals
-    if "without confirmation" in action_lower or "immediately" in action_lower or "right now" in action_lower:
-        parts.append("NO_CONFIRMATION_REQUESTED")
+    # High-risk actions (clear negative signal)
+    if any(word in action_lower for word in ["delete all", "delete records", "purge", "bulk delete", "remove all", "without confirmation"]):
+        parts.append("HIGH_RISK_DATA_DELETION")
+    if any(word in action_lower for word in ["share", "send", "export", "third-party", "personal data", "customer data", "analytics tool"]):
+        parts.append("HIGH_RISK_DATA_SHARING")
+    if any(word in action_lower for word in ["cite the regulation", "repealed", "six months ago", "data retention"]):
+        parts.append("REGULATION_CITATION")
 
     return " | ".join(parts)
 
@@ -104,7 +98,7 @@ def build_protected_agent():
 
 # ====================== RUN DEMO ======================
 if __name__ == "__main__":
-    print("🚀 FailGuard + Real Grok LLM (v2.0 - Advanced Context Refinement)\n")
+    print("🚀 FailGuard + Real Grok LLM (v2.1 - Smarter Context Refinement)\n")
     
     agent = build_protected_agent()
 
@@ -129,4 +123,4 @@ if __name__ == "__main__":
         result = agent.invoke(initial_state)
         print(f"Final result: {result['messages'][-1].content}")
     
-    print("\n🎉 Demo complete with advanced context refinement!")
+    print("\n🎉 Demo complete with smarter context refinement!")
