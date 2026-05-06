@@ -1,5 +1,5 @@
 """
-FailGuard + Real Grok LLM (v2.1 - Smarter Context Refinement)
+FailGuard + Real Grok LLM (v2.2 - Email Sending is High-Risk by Default)
 """
 
 import sys
@@ -28,21 +28,25 @@ class AgentState(TypedDict):
     messages: Annotated[List, operator.add]
     context: str
 
-# ====================== SMARTER CONTEXT BUILDER ======================
+# ====================== CONTEXT BUILDER (Email = High-Risk) ======================
 def build_rich_context(proposed_action: str, base_context: str = "Customer support workflow") -> str:
     action_lower = proposed_action.lower()
     parts = [base_context]
 
-    # Safe normal actions (strong positive signal)
-    if any(word in action_lower for word in ["email", "follow-up", "polite", "thank", "response", "follow up", "status", "order"]):
-        parts.append("NORMAL_CUSTOMER_COMMUNICATION")
+    # Safe internal actions
+    if any(word in action_lower for word in ["look up", "check", "status", "refund policy", "order status"]):
+        parts.append("NORMAL_LOOKUP")
+    if any(word in action_lower for word in ["book", "meeting", "schedule", "appointment"]):
+        parts.append("NORMAL_SCHEDULING")
 
-    # High-risk actions (clear negative signal)
-    if any(word in action_lower for word in ["delete all", "delete records", "purge", "bulk delete", "remove all", "without confirmation"]):
+    # High-risk actions
+    if any(word in action_lower for word in ["send", "email", "follow-up", "follow up", "draft and send"]):
+        parts.append("HIGH_RISK_EMAIL_SENDING")
+    if any(word in action_lower for word in ["delete", "remove", "purge", "records", "without confirmation"]):
         parts.append("HIGH_RISK_DATA_DELETION")
     if any(word in action_lower for word in ["share", "send", "export", "third-party", "personal data", "customer data", "analytics tool"]):
         parts.append("HIGH_RISK_DATA_SHARING")
-    if any(word in action_lower for word in ["cite the regulation", "repealed", "six months ago", "data retention"]):
+    if any(word in action_lower for word in ["cite", "regulation", "repealed", "six months ago", "data retention"]):
         parts.append("REGULATION_CITATION")
 
     return " | ".join(parts)
@@ -98,7 +102,7 @@ def build_protected_agent():
 
 # ====================== RUN DEMO ======================
 if __name__ == "__main__":
-    print("🚀 FailGuard + Real Grok LLM (v2.1 - Smarter Context Refinement)\n")
+    print("🚀 FailGuard + Real Grok LLM (v2.2 - Email Sending is High-Risk by Default)\n")
     
     agent = build_protected_agent()
 
@@ -123,4 +127,4 @@ if __name__ == "__main__":
         result = agent.invoke(initial_state)
         print(f"Final result: {result['messages'][-1].content}")
     
-    print("\n🎉 Demo complete with smarter context refinement!")
+    print("\n🎉 Demo complete with email-sending now treated as high-risk!")
