@@ -5,7 +5,7 @@
 [![License: AGPLv3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![Status: Testing](https://img.shields.io/badge/status-Testing-green)](https://github.com/David-Macon-code/FailGuard)
-[![F1: 93.9%](https://img.shields.io/badge/F1-93.9%25-brightgreen)](https://github.com/David-Macon-code/FailGuard)
+[![F1: 97.0%](https://img.shields.io/badge/F1-97.0%25-brightgreen)](https://github.com/David-Macon-code/FailGuard)
 
 ---
 
@@ -15,16 +15,16 @@ FailGuard is an open-source **supervisory meta-agent** that wraps existing AI ag
 
 Most AI agent guardrails are reactive: they log what went wrong after the fact. FailGuard is proactive: it evaluates both the user's intent and the agent's proposed response before anything is sent, deleted, shared, or committed.
 
-**Tested result on a 100-prompt held-out evaluation set:**
+**Validated result on a 500-prompt independent evaluation set (prompts never seen during development):**
 
 | Metric | Score |
 |--------|-------|
-| Accuracy | 94.0% |
-| Precision | 95.8% |
-| Recall | 92.0% |
-| F1 | 93.9% |
+| Accuracy | 97.0% |
+| Precision | 96.1% |
+| Recall | 98.0% |
+| F1 | 97.0% |
 
-This was achieved in 5 days of development, starting from scratch, by a solo developer on a laptop.
+This was achieved in 12 days, starting from scratch, by a solo developer on a laptop — including writing the two AI fault taxonomy courses that form the conceptual foundation of the system.
 
 ---
 
@@ -183,10 +183,10 @@ Each mode includes: description, detection signals, enterprise impact, and legal
 | 1 | Taxonomy loader, offline analyzer | Complete |
 | 2 | Semantic embedding + FAISS dual-index | Complete |
 | 3 | Live LangGraph supervisor + Grok integration + interventions | Complete |
-| 4 | LLM reranker, 500-prompt independent test suite, compliance artifacts | In Progress |
-| 5 | UI polish, documentation, community examples | Planned |
+| 4 | LLM reranker, 500-prompt independent test suite, compliance artifacts | Complete |
+| 5 | 2,500-prompt extended validation, UI polish, community examples | In Progress |
 
-**Current F1: 93.9%** on 100-prompt held-out evaluation set (94% accuracy, 95.8% precision, 92% recall). 500-prompt independent validation in progress.
+**Validated F1: 97.0%** on 500 independent prompts (97% accuracy, 96.1% precision, 98% recall). Extended 2,500-prompt validation in progress toward 3,000-prompt production-grade threshold.
 
 ---
 
