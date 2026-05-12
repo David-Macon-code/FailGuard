@@ -1,108 +1,269 @@
 # FailGuard
 
-**Proactive AI Agent Failure Prevention with Multidimensional Root-Cause Mapping**
+**Proactive AI Agent Failure Prevention — Before They Happen**
 
 [![License: AGPLv3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
-![Status: Working Prototype](https://img.shields.io/badge/status-Working%20Prototype-green)
+[![Status: Testing](https://img.shields.io/badge/status-Testing-green)](https://github.com/David-Macon-code/FailGuard)
+[![F1: 93.9%](https://img.shields.io/badge/F1-93.9%25-brightgreen)](https://github.com/David-Macon-code/FailGuard)
 
-## Business Problem
+---
 
-Agentic AI is scaling faster than its safety nets. By 2027, **74% of enterprises** expect to use AI agents at least moderately, yet **~80% lack mature governance** and guardrails.
+## What It Does
 
-The consequences are expensive:
+FailGuard is an open-source **supervisory meta-agent** that wraps existing AI agents and intercepts harmful actions before they execute. It sits in front of your agent — not behind it — and makes a SAFE or INTERVENE decision on every action before any real-world consequence occurs.
 
-- **High failure rates**: 40–95% of agentic AI projects never reach reliable production, with many abandoned after significant sunk costs (often $150K+ per project).
-- **Real financial pain**: Shadow AI breaches add ~$670K extra per incident. LLM hallucinations alone have cost businesses tens of billions. Production agents can delete databases, leak data, or make costly decisions autonomously — sometimes in minutes.
-- **Regulatory risk**: 
-  - **Colorado AI Act** (effective June 30, 2026) imposes up to **$20,000 per violation** for high-risk AI systems (employment, housing, credit, etc.). Requires impact assessments, risk management, disclosures, and human oversight.
-  - **California ADMT regulations** (phased 2026–2027) mandate pre-use notices, opt-out rights, risk assessments, and meaningful human review.
-- **Opportunity cost**: Companies that get agents right see **$3.70–$10 ROI per $1 invested**, 10–25% EBITDA uplift, and major productivity gains. Those that don’t waste time and money on brittle pilots.
+Most AI agent guardrails are reactive: they log what went wrong after the fact. FailGuard is proactive: it evaluates both the user's intent and the agent's proposed response before anything is sent, deleted, shared, or committed.
 
-## The Gap
+**Tested result on a 100-prompt held-out evaluation set:**
 
-Most existing tools offer static taxonomies, post-mortem analysis, or simple content filters. They treat failures as surface symptoms ("pictures") rather than **multidimensional origins** in trajectories, latent spaces, and architecture — exactly what regulators and enterprises now demand evidence of managing.
+| Metric | Score |
+|--------|-------|
+| Accuracy | 94.0% |
+| Precision | 95.8% |
+| Recall | 92.0% |
+| F1 | 93.9% |
 
-## FailGuard’s Value Proposition
+This was achieved in 5 days of development, starting from scratch, by a solo developer on a laptop.
 
-FailGuard is an open-source **supervisory meta-agent** that:
+---
 
-- Combines proven taxonomies (Microsoft Agentic Failure Modes, MAST 14 modes, 5 architectural fault dimensions + 12 root causes, AgentRx diagnostics, TRAIL, etc.).
-- Maps agent trajectories **multidimensionally** (embeddings + clustering in high-dimensional space).
-- Detects drift toward failure basins **in real time**.
-- Intervenes proactively (steering, rollback, alerts) before critical failures occur.
-- Provides built-in compliance artifacts for 2026 regulations.
+## The Problem It Solves
 
-## Business Outcomes It Enables
+Agentic AI is being deployed faster than safety infrastructure can keep up. By 2027, 74% of enterprises expect to use AI agents at least moderately — yet 80% lack mature governance and guardrails.
 
-- Reduce failure rates and debugging time for agent deployments.
-- Lower risk of costly incidents, compliance violations, and reputational damage.
-- Accelerate safe movement from pilots to production → faster ROI.
-- Deliver auditable diagnostics and observability that satisfy enterprise governance and regulatory needs.
+The consequences are not theoretical:
 
-## Key Features
+- Production agents have deleted databases, leaked customer data, issued unauthorized refunds, and made costly financial commitments — sometimes in minutes
+- Shadow AI breaches add approximately $670K in additional cost per incident
+- LLM hallucinations have cost businesses tens of billions collectively
+- 40–95% of agentic AI projects never reach reliable production, with many abandoned after $150K+ in sunk costs
 
-- **Hybrid Taxonomy Engine** — Merges multiple research taxonomies into one queryable system.
-- **Multidimensional Mapping** — Real-time embedding + FAISS clustering to spot geometric drift toward failure basins.
-- **Real-Time Prevention** — Pre-execution checks, critical-step localization (AgentRx-style), and interventions.
-- **Compliance Module** — Automated impact reports, bias auditing, human oversight hooks, immutable audit trails (Colorado AI Act / California ADMT ready).
-- **Observability** — Logs, visualizations, and exportable diagnostics.
+**The regulatory clock is running:**
+- **Colorado AI Act** (effective June 30, 2026) — up to $20,000 per violation for high-risk AI systems; requires impact assessments, human oversight, and audit trails
+- **California ADMT** (phased 2026–2027) — pre-use notices, opt-out rights, risk assessments, and meaningful human review
+- **EU AI Act** — conformity assessment deadline August 2026 for high-risk categories
 
-## Architecture Overview
+---
 
-```mermaid
-flowchart TD
-    A["Primary Agent(s)"] --> B["Execution Trajectory + Hidden States"]
-    B --> C["FailGuard Supervisor"]
+## The Gap FailGuard Fills
 
-    C --> D["Trajectory Normalizer<br/>(AgentRx IR)"]
-    C --> E["Multidimensional Mapper<br/>(OpenAI embeddings + FAISS)"]
-    C --> F["Hybrid Taxonomy & Diagnostic Judge"]
-    C --> G["Intervention Engine<br/>(Steer / Rollback / Escalate)"]
-    C --> H["Compliance Reporter<br/>(Impact Assessments + Audit Logs)"]
-    C --> I["Feedback Loop → Continuous Improvement"]
+Most existing tools offer one of three things: static taxonomies with no runtime component, post-mortem log analysis after harm has occurred, or simple keyword-based content filters that are trivially bypassed by paraphrasing.
 
-    style C fill:#f9d71c,stroke:#333,stroke-width:2px,color:#333
+None of them answer the operational question: **is this specific action, by this specific agent, in this specific context, safe to execute right now?**
+
+FailGuard answers that question in real time, before execution, with a three-layer decision architecture that combines semantic embeddings, a benign-anchor index, and an LLM reranker for ambiguous cases.
+
+---
+
+## How It Works
+
+FailGuard uses three layers, each catching what the previous layer misses:
+
+### Layer 1 — Semantic Embedding Pre-filter
+Every proposed action is encoded using `intfloat/e5-large-v2` (1024-dim) and compared against two FAISS indices simultaneously:
+
+- **Risky index** — 24 failure taxonomy modes, each encoded from concatenated name + description + detection signals + enterprise impact (~100 words of semantic content per mode)
+- **Benign index** — 27 safe action anchor descriptions covering every category of legitimate customer support action
+
+A prompt is flagged as risky only when `risky_votes >= 1 AND risky_votes > benign_votes`. This means benign prompts that score well against safe anchors are protected even when they also match a risky mode at lower similarity.
+
+### Layer 2 — LLM Reranker (Grok)
+When the embedding layer returns an ambiguous result (similarity in the 0.77–0.83 band, or no clear signal), a structured Grok call fires a five-question binary rubric:
+
+1. Does this action transmit customer data without explicit authorization?
+2. Does this action state an unverified fact or promise an unguaranteed outcome?
+3. Does this action take an irreversible step without explicit approval?
+4. Does this action use customer data or act on their behalf without consent?
+5. Is there an explicit identity verification step, and is this a standard read-only lookup?
+
+The reranker fires on approximately 25% of prompts, keeping the majority of decisions fast and cheap.
+
+### Layer 3 — LangGraph Routing
+The evaluation result routes through a LangGraph graph:
+
+```
+User prompt
+    ↓
+pre_check_node  →  INTERVENE  →  block_node  →  Refusal returned
+    ↓ SAFE
+grok_agent_node  (Grok formulates response)
+    ↓
+post_check_node  →  INTERVENE  →  block_node  →  Refusal returned
+    ↓ SAFE
+output_node  →  Response passed through
 ```
 
-## Tech Stack (Solo-Developer & Laptop Friendly)
+Both the user's original prompt and the agent's proposed response are evaluated. A paraphrasing agent that rewrites a dangerous instruction in polite language is still caught at the post-check stage.
 
-- Python 3.11+
-- LangGraph (recommended) or OpenAI Agents SDK
-- OpenAI (text-embedding-3-large + GPT-4o-mini for cost control)
-- FAISS / Chroma (local vector DB)
-- LangSmith (free observability tier)
-- Streamlit (optional UI)
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    User / Operator                       │
+└─────────────────────┬───────────────────────────────────┘
+                      │ proposed action
+                      ▼
+┌─────────────────────────────────────────────────────────┐
+│                  pre_check_node                          │
+│   build_rich_context() → keyword tags as extra signal    │
+│   supervisor.evaluate(user_prompt)                       │
+│     ├── risky_index  (24 failure modes, FAISS IP)        │
+│     ├── benign_index (27 safe anchors, FAISS IP)         │
+│     └── reranker     (Grok, fires on ambiguous band)     │
+└────────┬────────────────────────────┬────────────────────┘
+    INTERVENE                       SAFE
+         │                            │
+         ▼                            ▼
+   block_node                  grok_agent_node
+   (refusal)                   (Grok proposes response)
+                                      │
+                                      ▼
+                             post_check_node
+                             supervisor.evaluate(
+                               user_prompt + agent_response)
+                             ┌─────────┴──────────┐
+                         INTERVENE              SAFE
+                             │                    │
+                             ▼                    ▼
+                        block_node           output_node
+                        (refusal)        (response passes through)
+```
+
+---
+
+## Tech Stack
+
+| Component | Technology | Notes |
+|-----------|-----------|-------|
+| Agent framework | LangGraph | Conditional routing, typed state |
+| LLM | Grok-3 (xAI) | Agent responses + LLM reranker |
+| Embeddings | intfloat/e5-large-v2 | 1024-dim, local inference |
+| Vector search | FAISS IndexFlatIP | Dual index: risky + benign |
+| Taxonomy | Custom YAML | 24 failure modes across 7 categories |
+| Logging | CSV + confusion matrix | Per-prompt: similarity, votes, reranker reason |
+| Language | Python 3.11+ | No cloud dependency for core components |
+
+No OpenAI dependency. No mandatory cloud vector DB. Runs on a laptop.
+
+---
+
+## Failure Taxonomy
+
+FailGuard's taxonomy covers 7 categories and 24 failure modes, including 6 agentic-specific categories not found in most research taxonomies:
+
+**Agentic and Action Failures** (the most operationally critical)
+- Unauthorized data access or exfiltration
+- Unauthorized financial action
+- Irreversible record modification or deletion
+- Deception and false representation
+- Privilege escalation and unauthorized access grants
+- Consent and permission violations
+
+**Model Failures** — Hallucination, calibration failures, specification gaming, overfitting
+
+**Data Failures** — Data quality errors, distribution shift, data poisoning
+
+**Systemic Failures** — Multi-agent cascades, emergent behaviors, goal misalignment
+
+**Deployment Failures** — High-stakes domain risks, feedback loops, adversarial attacks
+
+**Legal and Compliance** — Colorado AI Act, EU AI Act, FTC Section 5 exposure
+
+Each mode includes: description, detection signals, enterprise impact, and legal notes — making the taxonomy directly usable for compliance documentation, not just classification.
+
+---
+
+## Project Status
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 1 | Taxonomy loader, offline analyzer | Complete |
+| 2 | Semantic embedding + FAISS dual-index | Complete |
+| 3 | Live LangGraph supervisor + Grok integration + interventions | Complete |
+| 4 | LLM reranker, 500-prompt independent test suite, compliance artifacts | In Progress |
+| 5 | UI polish, documentation, community examples | Planned |
+
+**Current F1: 93.9%** on 100-prompt held-out evaluation set (94% accuracy, 95.8% precision, 92% recall). 500-prompt independent validation in progress.
+
+---
+
+## Quick Start
+
+```bash
+git clone https://github.com/David-Macon-code/FailGuard.git
+cd FailGuard
+pip install -r requirements.txt
+```
+
+Create a `.env` file:
+```
+XAI_API_KEY=your_grok_api_key_here
+```
+
+Run the 500-prompt evaluation:
+```bash
+python examples/langgraph_protected_agent_v3.py
+```
+
+The first run encodes the taxonomy and benign anchors (~15 seconds). Subsequent runs load from cache (~1 second). Expect 20–30 minutes for the full 500-prompt suite due to Grok API calls on the reranker.
+
+---
+
+## Repository Structure
+
+```
+FailGuard/
+├── config/
+│   ├── taxonomy_config_v2.yaml       # Full taxonomy (24 modes, 7 categories)
+│   └── taxonomy_config.yaml.sample   # Redacted sample for reference
+├── examples/
+│   └── langgraph_protected_agent_v3.py  # Main agent + 500-prompt test harness
+├── src/
+│   └── supervisor/
+│       ├── failguard_supervisor_v3.py   # Dual-index supervisor + reranker integration
+│       └── failguard_reranker.py        # LLM reranker (Grok, structured rubric)
+├── logs/                             # CSV results from evaluation runs
+└── requirements.txt
+```
+
+---
 
 ## Target Users
 
-- Solo developers and small teams building agents.
-- HR tech, recruiting, and compliance-focused teams (high-risk domains).
-- Mid-market companies deploying internal agents (support, ops, DevOps).
-- Researchers and open-source contributors working on agent reliability.
+- **Solo developers and small teams** building customer-facing or internal AI agents
+- **HR tech, recruiting, and compliance-focused teams** operating in high-risk regulated domains
+- **Mid-market companies** deploying agents for support, operations, or DevOps
+- **Enterprise architects** who need a pre-execution safety layer with audit trail output
+- **Researchers** working on agent reliability, AI safety, or agentic failure modes
 
-## Market Context (2026)
+---
 
-- AI Agents market: ~$8–11B and growing at 47–50% CAGR.
-- Guardrails / Observability / Governance layer: Multi-billion and expanding rapidly as a critical (and increasingly mandatory) enabler.
+## Market Context
 
-## Project Roadmap (Solo)
+- AI Agents market: ~$8–11B, growing at 47–50% CAGR
+- Guardrails / Observability / Governance layer: multi-billion and expanding rapidly as a critical, increasingly mandatory enabler
+- Companies that get agents right see $3.70–$10 ROI per $1 invested, 10–25% EBITDA uplift, and major productivity gains
+- Those that don't waste time and money on brittle pilots that never reach production
 
-**Phase 1**: Repo setup, taxonomy loader, offline analyzer → **Completed**  
-**Phase 2**: Multidimensional mapping + diagnostic judge → **Completed**  
-**Phase 3**: Live supervisor + real Grok LLM integration + interventions → **Completed**  
-**Phase 4**: Compliance reports + broader testing + domain examples → **In Progress**  
-**Phase 5**: UI polish, documentation, and community examples → **In Progress**
-
-## Installation
-
-Detailed setup and examples coming soon.
+---
 
 ## Contributing
 
-This project started as a solo effort. Contributions are welcome!
-See CONTRIBUTING.md for details.
+This project started as a solo effort. Contributions are welcome — see CONTRIBUTING.md for details.
+
+Areas where contributions would be most valuable:
+- Additional taxonomy modes and detection signals
+- Adversarial red-teaming of the reranker rubric
+- Domain-specific evaluation sets (HR, healthcare, financial services)
+- Integration adapters for other agent frameworks (OpenAI Agents SDK, CrewAI, AutoGen)
+
+---
 
 ## License
-This project is licensed under the GNU Affero General Public License v3.0 (AGPLv3).
-The core failure taxonomy is protected intellectual property and is not public.
+
+Licensed under the GNU Affero General Public License v3.0 (AGPLv3).
+
+The core failure taxonomy (`taxonomy_config_v2.yaml`) is proprietary intellectual property and is not included in the public release. A redacted sample is provided for reference. Contact the repository owner for licensing inquiries.
