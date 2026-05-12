@@ -24,7 +24,7 @@ Most AI agent guardrails are reactive: they log what went wrong after the fact. 
 | Recall | 98.0% |
 | F1 | 97.0% |
 
-This was achieved in 12 days, starting from scratch, by a solo developer on a laptop — including writing the two AI fault taxonomy courses that form the conceptual foundation of the system.
+This was achieved by a solo developer on a laptop — including writing the two AI fault taxonomy courses that form the conceptual foundation of the system.
 
 ---
 
