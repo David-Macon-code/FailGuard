@@ -227,7 +227,7 @@ FailGuard's pre-execution interception and audit trail directly support complian
 
 **David Macon** - 40 years Verizon network engineering. AWS Certified AI Practitioner (AIF-C01). Author of the only two AI Fault Taxonomy courses in existence. Named Haven AI's best beta tester, April 2026.
 
-FailGuard was built solo, on a laptop, in 15 days - from a Haven AI bug report on April 27, 2026 to a 96.1% F1 validated system on May 12, 2026.
+FailGuard was built solo, on a laptop, inspired by a Haven AI bug report to a 96.1% F1 validated system on May 12, 2026.
 
 *"If I can teach it to a human I can teach it to AI."*
 
