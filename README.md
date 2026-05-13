@@ -223,6 +223,36 @@ FailGuard's pre-execution interception and audit trail directly support complian
 
 ---
 
+## Coming Next
+
+### Compliance Reporter
+FailGuard logs every evaluation — blocked or passed — with the failure mode, 
+similarity scores, reranker verdict, and reason. The Compliance Reporter turns 
+that raw audit trail into structured compliance artifacts: impact assessments, 
+risk documentation, and human oversight records that satisfy the requirements 
+of the Colorado AI Act, California ADMT, and EU AI Act.
+
+Every enterprise deploying high-risk AI needs to demonstrate that they have 
+governance in place. The Compliance Reporter makes that demonstration automatic. 
+Not a checkbox — a documented, timestamped, exportable record of every decision 
+the system made and why.
+
+### Feedback Footprint
+Most AI safety systems are static — they catch what they were trained to catch 
+and miss everything else. FailGuard is designed to learn.
+
+The Feedback Footprint module captures every miss: false negatives that slipped 
+through, false positives that over-blocked, edge cases that exposed gaps in the 
+taxonomy or rubric. Each miss is categorized, analyzed, and fed back into the 
+system as a targeted fix — a new benign anchor, a rubric adjustment, an expanded 
+taxonomy mode.
+
+The result is a system that gets harder to fool with every production run. That 
+is the defensible moat. Anyone can copy the architecture. Nobody can copy the 
+learning.
+
+---
+
 ## About the Author
 
 **David Macon** - 35+ years Verizon network engineering. AWS Certified AI Practitioner (AIF-C01). Author of the only two AI Fault Taxonomy courses in existence. Named Haven AI's best beta tester, April 2026.
