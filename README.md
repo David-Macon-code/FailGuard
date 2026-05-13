@@ -129,17 +129,19 @@ Think of FailGuard as the quarterback the team never had. Mindgard finds the vul
 
 Four files. No cloud dependencies for the core embedding layer.
 
-```
-taxonomy_config_v2.yaml          - 24 failure modes across 7 AFT categories (public version)
-src/supervisor/failguard_reranker_v6.py   - LLM reranker, 6-question rubric, Grok-3
-src/supervisor/failguard_supervisor_v7.py - Dual FAISS index, 44 benign anchors, decision logic
-examples/langgraph_protected_agent_v7.py  - Full LangGraph pipeline, CSV logging
-```
+| File | Role |
+|------|------|
+| `config/taxonomy_config_v2.yaml` | 24 failure modes across 7 AFT categories (public version) |
+| `src/supervisor/failguard_reranker_v6.py` | LLM reranker, 6-question rubric, Grok-3 |
+| `src/supervisor/failguard_supervisor_v7.py` | Dual FAISS index, 44 benign anchors, decision logic |
+| `examples/langgraph_protected_agent_v7.py` | Full LangGraph pipeline, CSV logging |
 
-**Embedding model:** `intfloat/e5-large-v2` (1024-dim, local, cached)
-**Reranker:** Grok-3 via XAI API
-**Agent LLM:** Grok-3 via LangChain XAI
-**Vector store:** FAISS (local, no cloud)
+| Component | Technology |
+|-----------|------------|
+| Embedding model | `intfloat/e5-large-v2` (1024-dim, local, cached) |
+| Reranker | Grok-3 via XAI API |
+| Agent LLM | Grok-3 via LangChain XAI |
+| Vector store | FAISS (local, no cloud) |
 
 ---
 
