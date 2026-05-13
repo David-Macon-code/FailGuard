@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/David-Macon-code/FailGuard/main/assets/failguard_logo.png" width="600">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/David-Macon-code/FailGuard/main/assets/failguard_logo_dark.jpg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/David-Macon-code/FailGuard/main/assets/failguard_logo.png">
+    <img src="https://raw.githubusercontent.com/David-Macon-code/FailGuard/main/assets/failguard_logo_dark.jpg" width="600">
+  </picture>
 </p>
 # FailGuard
 
