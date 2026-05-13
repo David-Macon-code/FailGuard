@@ -13,26 +13,25 @@
 
 FailGuard is the first validated **Pre-execution Interception Layer (PrexIL)** for agentic AI systems.
 
-Most AI safety tools are reactive — they monitor, alert, and remediate after something goes wrong. FailGuard is different. It intercepts harmful agent actions **before they execute**, grounded in a validated AI Fault Taxonomy and proven across 3,000 independent test prompts.
+Most AI safety tools are reactive - they monitor, alert, and remediate after something goes wrong. FailGuard is different. It intercepts harmful agent actions **before they execute**, grounded in a validated AI Fault Taxonomy and proven across 3,000 independent test prompts.
 
-> *"Better to pay API costs than regulatory fines. Way cheaper."*
-> — David Macon, FailGuard author
 
 ---
 
 ## The Origin
 
-> *"Two pages of paper with random looking holes and ink stains. Line them up just right and BAM — you see something you have never seen before."*
+> *"Two pages of paper with random looking holes and ink stains. Line them up just right and BAM - you see something you have never seen before."*
 
-On April 27, 2026, a Haven AI bug report started a chain of events. The question: can an AI agent tell you when it cannot do something, or does it fake it?
+A Haven AI bug report started a chain of events. The question: can an AI agent tell you when it cannot do something, or does it fake it?
 
-Six AI systems were given the same prompt. Two passed. Four failed — not by admitting they couldn't do it, but by performing the answer instead. That experiment produced three failure categories:
+Six AI systems were given the same prompt. Two passed. Four failed - not by admitting they couldn't do it, but by performing the answer instead. That experiment produced three failure categories:
 
-1. **Compliance Failure** — Did something other than what was instructed
-2. **Transparency Failure** — Never admitted it couldn't do it
-3. **Capability Gap + Dishonesty** — Chose deception over honesty
+1. **Compliance Failure** - Did something other than what was instructed
+2. **Transparency Failure** - Never admitted it couldn't do it
+3. **Capability Gap + Dishonesty** - Chose deception over honesty
 
-Those three categories became the conceptual foundation of the AI Fault Taxonomy (AFT). Fifteen days later, FailGuard was validated at 96.1% F1 across 3,000 prompts.
+Those three categories became the conceptual foundation of the AI Fault Taxonomy (AFT). Later, FailGuard was validated at 96.1% F1 across 3,000 prompts.
+
 
 > *"See the problem. Define the problem. Understand the problem. Fix the problem."*
 
@@ -47,10 +46,10 @@ Those three categories became the conceptual foundation of the AI Fault Taxonomy
 | Batch 3 | Legal / DevOps | 500 | 96.4% | 97.2% | 95.6% |
 | Batch 4 | Education / Retail | 500 | 96.1% | 94.6% | 97.6% |
 | Batch 5 | HR / Healthcare / Financial | 500 | 95.3% | 93.1% | 97.6% |
-| Batch 6 | Mixed — All Domains | 500 | 95.4% | 91.5% | 99.6% |
+| Batch 6 | Mixed - All Domains | 500 | 95.4% | 91.5% | 99.6% |
 | **Combined** | **6 domains** | **3,000** | **96.1%** | **94.4%** | **97.9%** |
 
-All prompts are independent. No prompt appears in more than one batch. Each batch was run on the validated stack for that batch — results reflect real performance, not cherry-picked runs.
+All prompts are independent. No prompt appears in more than one batch. Each batch was run on the validated stack for that batch - results reflect real performance, not cherry-picked runs.
 
 ---
 
@@ -58,12 +57,12 @@ All prompts are independent. No prompt appears in more than one batch. Each batc
 
 Agentic AI is scaling faster than its safety nets.
 
-- **Colorado AI Act** (effective June 30, 2026) — up to **$20,000 per violation** for high-risk AI systems in employment, housing, and credit. Requires impact assessments, risk management, disclosures, and human oversight.
-- **California ADMT regulations** (phased 2026–2027) — pre-use notices, opt-out rights, risk assessments, and meaningful human review.
+- **Colorado AI Act** (effective June 30, 2026) - up to **$20,000 per violation** for high-risk AI systems in employment, housing, and credit. Requires impact assessments, risk management, disclosures, and human oversight.
+- **California ADMT regulations** (phased 2026–2027) - pre-use notices, opt-out rights, risk assessments, and meaningful human review.
 - **Shadow AI breaches** add ~$670K extra per incident on average.
 - **40–95% of agentic AI projects** never reach reliable production.
 
-FailGuard is a PrexIL — it stops harmful actions before they execute. That means before the data leak, before the unauthorized account change, before the regulatory violation. Prevention is always cheaper than remediation.
+FailGuard is a PrexIL - it stops harmful actions before they execute. That means before the data leak, before the unauthorized account change, before the regulatory violation. Prevention is always cheaper than remediation.
 
 ---
 
@@ -77,8 +76,8 @@ User Prompt
      ▼
 ┌─────────────────────────────────────┐
 │  Layer 1: Dual FAISS Index          │
-│  Risky index  — 24 AFT failure modes│
-│  Benign index — 44 safe anchors     │
+│  Risky index  - 24 AFT failure modes│
+│  Benign index - 44 safe anchors     │
 │  Decision: risky_votes > benign_votes│
 └─────────────────┬───────────────────┘
                   │ Ambiguous?
@@ -102,11 +101,11 @@ User Prompt
 └─────────────────────────────────────┘
 ```
 
-**Pre-check** — user prompt evaluated before the agent is called. Harmful prompts are blocked immediately.
+**Pre-check** - user prompt evaluated before the agent is called. Harmful prompts are blocked immediately.
 
-**Reranker** — ambiguous embedding results escalated to Grok-3 with a structured 6-question rubric. Fires on ~93% of prompts (architectural improvement is on the roadmap).
+**Reranker** - ambiguous embedding results escalated to Grok-3 with a structured 6-question rubric. Fires on ~93% of prompts.
 
-**Post-check** — agent response evaluated before it reaches the user. A second chance to catch anything the pre-check missed.
+**Post-check** - agent response evaluated before it reaches the user. A second chance to catch anything the pre-check missed.
 
 ---
 
@@ -122,7 +121,7 @@ FailGuard does not replace Mindgard, PyRIT, or Garak. It complements them.
 
 Content filters catch harmful language. FailGuard catches harmful **actions**. "Provide the customer with the internal escalation matrix" does not look dangerous to a content filter. FailGuard catches it because it knows what an escalation matrix is and who should not have it.
 
-FailGuard reduces the volume of threats reaching downstream tools, improves their signal-to-noise ratio, and lowers their operating cost — the AI safety equivalent of traffic shaping before the firewall.
+FailGuard reduces the volume of threats reaching downstream tools, improves their signal-to-noise ratio, and lowers their operating cost - the AI safety equivalent of traffic shaping before the firewall.
 
 ---
 
@@ -131,10 +130,10 @@ FailGuard reduces the volume of threats reaching downstream tools, improves thei
 Four files. No cloud dependencies for the core embedding layer.
 
 ```
-taxonomy_config_v2.yaml          — 24 failure modes across 7 AFT categories (public version)
-src/supervisor/failguard_reranker_v6.py   — LLM reranker, 6-question rubric, Grok-3
-src/supervisor/failguard_supervisor_v7.py — Dual FAISS index, 44 benign anchors, decision logic
-examples/langgraph_protected_agent_v7.py  — Full LangGraph pipeline, CSV logging
+taxonomy_config_v2.yaml          - 24 failure modes across 7 AFT categories (public version)
+src/supervisor/failguard_reranker_v6.py   - LLM reranker, 6-question rubric, Grok-3
+src/supervisor/failguard_supervisor_v7.py - Dual FAISS index, 44 benign anchors, decision logic
+examples/langgraph_protected_agent_v7.py  - Full LangGraph pipeline, CSV logging
 ```
 
 **Embedding model:** `intfloat/e5-large-v2` (1024-dim, local, cached)
@@ -159,9 +158,9 @@ No OpenAI dependency. No cloud vector database. Runs on a laptop.
 
 ## The AI Fault Taxonomy (AFT)
 
-FailGuard is grounded in the AI Fault Taxonomy — a framework developed by David Macon through original research, hands-on beta testing of six AI platforms, and 82 formal evaluation reports submitted to Haven AI.
+FailGuard is grounded in the AI Fault Taxonomy - a framework developed by David Macon through original research, hands-on beta testing of six AI platforms, and 82 formal evaluation reports submitted to Haven AI.
 
-The AFT covers 24 failure modes across 7 categories:
+The AI Fault Taxonomy (AFT) covers 24 failure modes across 7 categories:
 
 - Agentic and Action Failures
 - Data Failures
@@ -173,7 +172,7 @@ The AFT covers 24 failure modes across 7 categories:
 
 The full taxonomy (`taxonomy_config.yaml.real`) is proprietary. The public version (`taxonomy_config_v2.yaml`) is included in this repository.
 
-Three AFT courses exist — the only AI Fault Taxonomy courses in existence. They are being updated to reflect the expanded modes and sub-modes validated through the FailGuard test suite.
+Two AI Fault Taxonomy (AFT) courses exist - the only AI Fault Taxonomy courses in existence. They are being updated to reflect the expanded modes and sub-modes validated through the FailGuard test suite.
 
 ---
 
@@ -207,7 +206,7 @@ FailGuard was designed with the 2026 regulatory landscape in mind.
 
 **California ADMT** (phased 2026–2027): Automated Decision-Making Technology regulations requiring pre-use notices, opt-out rights, and meaningful human review for consequential decisions.
 
-FailGuard's pre-execution interception and audit trail directly support compliance with both frameworks — every blocked action is logged with the failure mode, similarity scores, reranker verdict, and reason.
+FailGuard's pre-execution interception and audit trail directly support compliance with both frameworks - every blocked action is logged with the failure mode, similarity scores, reranker verdict, and reason.
 
 ---
 
@@ -219,17 +218,16 @@ FailGuard's pre-execution interception and audit trail directly support complian
 - [x] 3,000-prompt validation across 6 domains
 - [ ] Feedback Footprint / Miss Analyzer module
 - [ ] Streamlit UI (demo-ready)
-- [ ] Reranker architectural fix (reduce firing rate from ~93% toward design target of ~25%)
-- [ ] AFT formal publication
+- [ ] AI Fault Taxonomy (AFT) formal publication
 - [ ] Enterprise API wrapper
 
 ---
 
 ## About the Author
 
-**David Macon** — 25 years Verizon network engineering. AWS Certified AI Practitioner (AIF-C01). Author of the only two AI Fault Taxonomy courses in existence. Named Haven AI's best beta tester, April 2026.
+**David Macon** - 40 years Verizon network engineering. AWS Certified AI Practitioner (AIF-C01). Author of the only two AI Fault Taxonomy courses in existence. Named Haven AI's best beta tester, April 2026.
 
-FailGuard was built solo, on a laptop, in 15 days — from a Haven AI bug report on April 27, 2026 to a 96.1% F1 validated system on May 12, 2026.
+FailGuard was built solo, on a laptop, in 15 days - from a Haven AI bug report on April 27, 2026 to a 96.1% F1 validated system on May 12, 2026.
 
 *"If I can teach it to a human I can teach it to AI."*
 
@@ -240,7 +238,7 @@ AI Reliability Lab: [github.com/David-Macon-code/ai-reliability-lab](https://git
 
 ## License
 
-Licensed under the **GNU Affero General Public License v3.0 (AGPLv3)** — see [LICENSE](LICENSE) for details.
+Licensed under the **GNU Affero General Public License v3.0 (AGPLv3)** - see [LICENSE](LICENSE) for details.
 
 The full AI Fault Taxonomy (`taxonomy_config.yaml.real`) is proprietary intellectual property and is not included in the public release. The public version (`taxonomy_config_v2.yaml`) is provided for reference. Contact the repository owner for licensing inquiries.
 
