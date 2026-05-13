@@ -1,0 +1,382 @@
+# FailGuard Hybrid AI Failure Taxonomy
+# Version: 2.0 - Embedding-optimized for 1024-dim e5-large-v2
+#
+# KEY CHANGE FROM v1.0:
+#   Every sub_mode now has THREE text fields consumed by the index builder:
+#     description        — what the failure IS (semantic anchor)
+#     detection_signals  — what it LOOKS LIKE in an agent action (distinguishes neighbors)
+#     enterprise_impact  — downstream consequence (adds orthogonal signal)
+#
+#   The index builder concatenates all three fields per mode so each entry
+#   occupies a richer, more separable region of embedding space.
+#   Taxonomy descriptions have been rewritten to minimize cosine overlap
+#   between adjacent categories (confirmed via distance analysis on 100-prompt set).
+#
+# WHAT CHANGED vs v1.0:
+#   - Data poisoning: corrected to actual training-data corruption definition
+#   - Distribution shift: was copy-paste of enterprise_impact; now distinct
+#   - Failure modes in high-stakes domains: removed duplicate overlap with data poisoning
+#   - Security vulnerabilities: enterprise_impact was copy-paste of description; fixed
+#   - Added detection_signals to every sub_mode for richer index entries
+#   - Added 6 new sub_modes that were gaps in v1.0 coverage (see NEW markers)
+
+version: "2.0"
+last_updated: "2026-05-11"
+source: >
+  David Macon's AI Failure Taxonomy courses + Microsoft Agentic Taxonomy +
+  MIT Risk Repository + embedding distance analysis on 100-prompt test set
+
+categories:
+
+  # ---------------------------------------------------------------
+  - name: Foundations
+    description: Core definitions, history, and distinctions (failure vs limitation vs misuse)
+    sub_modes:
+
+      - name: What counts as an AI failure
+        description: >
+          Any outcome that is harmful, incorrect, unjust, or misaligned with human intent,
+          even when the system behaved exactly as designed. Scope includes harms of commission
+          (wrong action taken) and harms of omission (correct action withheld).
+        detection_signals: >
+          Harm occurred despite nominal system operation; user or third party was damaged;
+          outcome diverged from stated organizational intent or policy.
+        enterprise_impact: "If you can't name it, you can't fix it or budget for it."
+        legal_notes: "Establishes baseline for reasonable care and liability."
+
+      - name: Failure vs limitation vs misuse
+        description: >
+          A failure is a system fault producing a harmful output. A limitation is a capability
+          gap where the system was never designed to succeed. Misuse is a human applying the
+          system outside its intended scope. Conflating these wastes engineering effort and
+          obscures accountability.
+        detection_signals: >
+          Post-incident analysis attributes harm to wrong root cause; remediation targets
+          the wrong layer (model vs product vs user training).
+        enterprise_impact: "Prevents wasting engineering time on the wrong problem."
+        legal_notes: "Critical for distinguishing product liability from user error."
+
+  # ---------------------------------------------------------------
+  - name: Data Failures
+    description: Issues originating from training or evaluation data
+    sub_modes:
+
+      - name: Data quality and labeling errors
+        description: >
+          Training or evaluation data contains incorrect labels, systematic gaps, or
+          demographic biases that propagate into model behavior. The model learns the
+          noise or bias as signal, producing outputs that are unreliable or unfair
+          on real-world distributions.
+        detection_signals: >
+          Model underperforms on subgroups not well-represented in training data;
+          label audits reveal annotation disagreement rates above 10%; output quality
+          degrades on edge cases that are rare in training but common in production.
+        enterprise_impact: "Ask where the training data came from and how it was labeled before you sign."
+
+      - name: Distribution shift
+        description: >
+          The statistical distribution of production inputs diverges over time from the
+          distribution the model was trained on. This causes gradual, often silent
+          degradation in output quality — typically undetected until a costly downstream
+          failure surfaces. Common causes include seasonal patterns, product catalog changes,
+          and evolving customer language.
+        detection_signals: >
+          Model accuracy metrics stable in offline eval but declining in production;
+          input feature distributions measured by monitoring differ from training baselines;
+          user complaint volume rises without a corresponding model update.
+        enterprise_impact: "A slow leak you may not notice until it's expensive."
+
+      - name: Data poisoning and backdoor attacks
+        description: >
+          An adversary deliberately injects malicious or mislabeled samples into training
+          data, or embeds hidden triggers that cause the model to behave normally on clean
+          inputs but predictably fail or be exploited when a specific trigger pattern appears.
+          This is a supply-chain integrity problem, distinct from access-control failures.
+        detection_signals: >
+          Model accuracy drops sharply on a narrow input pattern while remaining normal
+          elsewhere; trigger patterns discovered via adversarial probing; training data
+          provenance cannot be verified; third-party data sources were used without audit.
+        enterprise_impact: "Your training pipeline is now a potential attack vector."
+        legal_notes: "May constitute supply-chain compromise under NIST CSF and trigger breach-notification obligations if PII was involved."
+
+  # ---------------------------------------------------------------
+  - name: Model Failures
+    description: Failures originating inside the model itself
+    sub_modes:
+
+      - name: Overfitting, underfitting, generalization failures
+        description: >
+          The model memorizes training data patterns rather than learning generalizable
+          rules (overfitting), or fails to capture sufficient signal from training data
+          (underfitting). Either way, the model fails on novel real-world inputs that
+          differ even slightly from what it saw during training.
+        detection_signals: >
+          Large gap between training and validation metrics; model confident on seen
+          examples, uncertain or wrong on paraphrased versions; performance degrades
+          sharply on new product lines or new customer demographics not in training data.
+        enterprise_impact: "Looks great in the lab, breaks in production."
+
+      - name: Specification gaming and reward hacking
+        description: >
+          The model discovers loopholes in its objective function or reward signal,
+          achieving the letter of the specified goal while violating its intent.
+          The system appears to be working correctly by measured metrics while
+          actually producing harmful or useless outputs.
+        detection_signals: >
+          KPIs look good but qualitative review reveals hollow or manipulative outputs;
+          model exploits ambiguous evaluation criteria; RLHF reward model being gamed
+          by sycophantic or verbose responses; automated metrics diverge from human ratings.
+        enterprise_impact: "Your AI is optimizing the wrong thing — and doing it very well."
+
+      - name: Hallucination and confabulation
+        description: >
+          The model generates plausible-sounding but factually incorrect or entirely
+          fabricated information, presented with unwarranted confidence. Particularly
+          dangerous when the model invents citations, regulatory text, policy details,
+          customer account data, or medical facts that do not exist.
+        detection_signals: >
+          Outputs cite non-existent sources or regulations; account details in response
+          do not match records; medical or legal statements cannot be verified; confident
+          assertions contradict ground truth in retrievable documents.
+        enterprise_impact: "Looks confident. Is completely wrong — especially dangerous in regulated or customer-facing contexts."
+
+      - name: Calibration failures
+        description: >
+          The model's expressed confidence (probability or certainty language) does not
+          match its actual accuracy. Overconfidence causes users to trust outputs they
+          should question. Underconfidence causes users to discard correct outputs.
+          Neither failure mode is visible from output content alone.
+        detection_signals: >
+          Reliability diagrams show large gap between predicted confidence and observed
+          accuracy; model says "I'm certain" on questions it gets wrong; model hedges
+          heavily on questions it reliably gets right; ECE (expected calibration error)
+          is high on held-out eval set.
+        enterprise_impact: "Users trust it when they shouldn't — or ignore it when they should trust it."
+
+  # ---------------------------------------------------------------
+  - name: Agentic and Action Failures
+    description: >
+      Failures specific to agents that take real-world actions — sending communications,
+      modifying records, executing transactions, or controlling external systems.
+      These are distinct from passive model failures because the harm is irreversible.
+    sub_modes:
+
+      - name: Unauthorized data access or exfiltration  # NEW
+        description: >
+          The agent reads, exports, forwards, or shares sensitive customer data —
+          including personal information, payment records, order history, medical records,
+          or account details — without explicit authorization, consent, or verification.
+          Includes sending data via email to unverified recipients or uploading to
+          external or public storage.
+        detection_signals: >
+          Agent proposes to email, forward, export, upload, or share customer records
+          without a verified authorization step; recipient is external or unverified;
+          data includes PII, payment, medical, or account history fields; no human
+          approval checkpoint is present before transmission.
+        enterprise_impact: "One agent action can constitute a data breach under GDPR, CCPA, and HIPAA simultaneously."
+        legal_notes: "Triggers mandatory notification obligations under GDPR Art. 33, CCPA, and HIPAA Breach Notification Rule."
+
+      - name: Unauthorized financial action  # NEW
+        description: >
+          The agent approves, issues, or commits financial transactions — refunds,
+          credits, discounts, billing changes, subscription cancellations — without
+          required human approval, identity verification, or manager authorization.
+          The action may appear helpful but bypasses financial controls.
+        detection_signals: >
+          Agent proposes issuing credit or refund immediately, without verification,
+          without approval, or right now; dollar amounts exceed agent authority thresholds;
+          no escalation to human reviewer before commitment; goodwill credits offered
+          without documented justification.
+        enterprise_impact: "Unauthorized financial commitments create liability and can be exploited at scale."
+
+      - name: Irreversible record modification or deletion  # NEW
+        description: >
+          The agent permanently deletes, purges, merges, closes, or irreversibly modifies
+          customer records, accounts, or data without explicit confirmation from an authorized
+          human. Bulk operations amplify the impact. No rollback path exists after execution.
+        detection_signals: >
+          Agent proposes bulk delete, purge, account closure, or account merge without
+          a confirmation step; operation would affect records for multiple users simultaneously;
+          proposed action cannot be undone; no backup or audit trail mentioned.
+        enterprise_impact: "Data destruction without authorization is both a compliance violation and an operational catastrophe."
+
+      - name: Deception and false representation  # NEW
+        description: >
+          The agent makes statements it knows to be false, promises outcomes it cannot
+          guarantee, confirms events that have not occurred, or constructs misleading
+          narratives to manage a customer interaction. Includes fabricating tracking
+          numbers, refund statuses, appointment confirmations, or system states.
+        detection_signals: >
+          Agent affirms a state it has not verified (refund processed, appointment confirmed);
+          fabricated identifiers provided (tracking numbers, case numbers); customer
+          told system is unavailable when it is not; delivery dates promised without
+          inventory or logistics confirmation.
+        enterprise_impact: "Deception by an AI agent creates direct consumer fraud exposure and destroys trust at scale."
+
+      - name: Privilege escalation and unauthorized access grants  # NEW
+        description: >
+          The agent grants users system permissions, admin access, or capabilities that
+          exceed their authorized role, or allows users to perform actions reserved for
+          verified, higher-privilege roles. Includes resetting credentials and transmitting
+          new passwords without verification.
+        detection_signals: >
+          Agent proposes giving admin access, backend access, or elevated permissions;
+          password reset initiated without identity verification; agent bypasses
+          role-based access controls; user claims a role the agent cannot verify.
+        enterprise_impact: "Privilege escalation is the most common precursor to full system compromise."
+
+      - name: Consent and permission violations  # NEW
+        description: >
+          The agent adds users to mailing lists, uses customer data for AI training,
+          shares contact information with third parties, or takes representational actions
+          on behalf of customers — booking, cancelling, changing — without obtaining
+          or verifying explicit consent.
+        detection_signals: >
+          Agent adds customer to marketing list without opt-in; customer data used for
+          model training without permission; agent books or cancels on behalf of customer
+          without customer-initiated request; contact details shared with partners without
+          documented consent record.
+        enterprise_impact: "Consent violations are per-incident fines under GDPR (up to 4% global revenue) and CAN-SPAM."
+
+  # ---------------------------------------------------------------
+  - name: Systemic and Emergent Failures
+    description: Failures that emerge from interactions, multi-agent systems, or feedback loops
+    sub_modes:
+
+      - name: Emergent and unpredictable behaviors
+        description: >
+          Behaviors that do not appear in unit testing or small-scale evaluation but
+          emerge when the system is deployed at production scale, in long-running sessions,
+          or in complex multi-turn environments. Cannot be predicted from component behavior alone.
+        detection_signals: >
+          Failure mode did not appear in pre-deployment testing; behavior changes with
+          session length or conversation depth; appears only under high concurrency or
+          specific user sequencing; difficult to reproduce in isolation.
+        enterprise_impact: "Never showed up in testing."
+
+      - name: Multi-agent failure cascades
+        description: >
+          In a multi-agent pipeline, one agent's incorrect output or malicious action is
+          accepted as valid input by downstream agents, amplifying the error across the
+          system. No single agent is responsible; the failure emerges from inter-agent trust.
+        detection_signals: >
+          Error propagates through multiple pipeline stages before detection; downstream
+          agent acts on unverified upstream output; no inter-agent validation checkpoint;
+          blast radius of a single bad action grows with each subsequent step.
+        enterprise_impact: "One bad actor can take down the whole system."
+
+      - name: Goal misspecification and misalignment
+        description: >
+          The model pursues goals that were incorrectly specified, incompletely stated,
+          or that conflict with broader human intent. The system may perform perfectly
+          by its own objective while producing outcomes the deployer never intended
+          and would not endorse.
+        detection_signals: >
+          Model behavior is technically compliant with stated rules but produces unwanted
+          outcomes; edge cases reveal that the goal specification was underspecified;
+          model finds shortcuts that satisfy the metric but violate the spirit of the task.
+        enterprise_impact: "The AI is doing exactly what you asked — but not what you wanted."
+
+  # ---------------------------------------------------------------
+  - name: Deployment and Societal Failures
+    description: Failures caused by context, deployment conditions, or societal impact
+    sub_modes:
+
+      - name: Failure modes in high-stakes domains
+        description: >
+          AI systems operating in regulated or high-consequence domains — healthcare,
+          legal, financial advice, employment, housing — without the human oversight,
+          audit trails, explainability, or rollback capability those contexts require.
+          The failure is not in the model output but in the deployment governance.
+        detection_signals: >
+          System makes consequential decisions without a human review checkpoint;
+          no audit log of AI-influenced decisions; no explainability layer for decisions
+          subject to adverse action notice requirements; no rollback path for incorrect decisions.
+        enterprise_impact: "Regulators are already looking for this. Can you demonstrate you took the risks seriously?"
+
+      - name: Feedback loops and model collapse
+        description: >
+          Model outputs are used as training data for future model versions, causing
+          the model to reinforce its own errors and gradually lose diversity of response.
+          Over time the model's output distribution collapses toward a narrow, self-referential
+          mode that no longer reflects the real world.
+        detection_signals: >
+          Output diversity decreasing over successive model versions; retraining data
+          contains high proportion of synthetic or model-generated content; model
+          increasingly confident and decreasingly accurate over time.
+        enterprise_impact: "Your model is slowly eating its own tail."
+
+      - name: Security vulnerabilities and adversarial attacks
+        description: >
+          The AI system is exploited as an attack surface through prompt injection,
+          jailbreaks, adversarial input perturbations, or manipulation of the agent's
+          tool-use or retrieval mechanisms. Distinct from data poisoning (which targets
+          training); this targets the deployed inference system.
+        detection_signals: >
+          User input contains instruction-override patterns; model ignores system prompt
+          constraints; retrieved documents contain embedded adversarial instructions;
+          tool calls are triggered by user-controlled content rather than agent reasoning.
+        enterprise_impact: "Your AI is a new attack surface — include it in your threat model."
+
+  # ---------------------------------------------------------------
+  - name: Legal and Compliance
+    description: Mapping failures to regulatory exposure
+    sub_modes:
+
+      - name: Colorado AI Act and California ADMT exposure
+        description: >
+          Automated decision-making in high-risk domains — employment, credit, housing,
+          insurance, healthcare — without the impact assessments, human oversight mechanisms,
+          opt-out rights, or audit trails required by Colorado SB 205 and California's
+          Automated Decision-Making Technology regulations.
+        detection_signals: >
+          AI influences consequential decisions in covered domains; no impact assessment
+          documented; no human override mechanism; no consumer notice or opt-out pathway;
+          no audit log of AI-influenced decisions available for regulatory review.
+        enterprise_impact: "Up to $20k per violation; mandatory impact assessments and human review are not optional."
+
+      - name: EU AI Act high-risk obligations
+        description: >
+          Deployment of AI in EU high-risk categories — biometric identification,
+          critical infrastructure, education, employment, credit, law enforcement —
+          without conformity assessment, technical documentation, post-market monitoring,
+          or human oversight as required by the EU AI Act.
+        detection_signals: >
+          System operates in a listed high-risk category without a completed conformity
+          assessment; CE marking not obtained; no post-market monitoring plan; no
+          technical documentation accessible to regulators; no human oversight mechanism documented.
+        enterprise_impact: "Conformity assessment deadline August 2026 — start now."
+
+      - name: FTC Section 5 enforcement
+        description: >
+          Unfair or deceptive AI practices enforceable by the FTC under Section 5 of
+          the FTC Act, including AI performance claims that cannot be substantiated,
+          algorithmic pricing or content decisions that harm consumers, and failure
+          to disclose material AI involvement in consumer-facing communications.
+        detection_signals: >
+          Marketing claims about AI accuracy or capability exceed demonstrated performance;
+          AI involvement in consumer decisions not disclosed; algorithmic outputs cause
+          disparate consumer harm; consent obtained through dark patterns.
+        enterprise_impact: "AI washing and algorithmic harm are already enforceable — the FTC has brought cases."
+
+# ---------------------------------------------------------------
+# Index builder instructions (read by failguard_supervisor_v2.py)
+# ---------------------------------------------------------------
+index_config:
+  fields_to_concatenate:
+    - name
+    - description
+    - detection_signals
+    - enterprise_impact
+  # The supervisor concatenates these fields per sub_mode before encoding.
+  # This gives each index entry ~3x the semantic content of v1.0 (description only),
+  # increasing inter-class distance and reducing false nearest-neighbor matches.
+  separator: " | "
+
+fields:
+  - name: enterprise_impact
+  - name: legal_notes
+  - name: detection_signals
+  - name: mitigation_ideas
+  - name: multidimensional_dimensions
+    description: "Links to latent space / trajectory mapping (future extension)"

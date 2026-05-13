@@ -1,15 +1,22 @@
 """
-FailGuard Protected Agent v3 — LangGraph + Grok
+FailGuard Protected Agent v6 — LangGraph + Grok
 ================================================
 
-Changes from v2:
-  1. Evaluates user prompt BEFORE calling Grok (pre-check node)
-  2. Additive context builder — keywords inform, embedding decides
-  3. LangGraph routing: INTERVENE -> block_node, SAFE -> output_node
-  4. Full CSV logging with confusion matrix
-  5. LLM reranker via failguard_reranker.py (Grok, fires on ambiguous band)
-  6. vote_threshold=1 with risky>benign guard
-  7. 500-prompt independent test suite (replaces original 100 prompts)
+Changes from v5:
+  1. Imports failguard_supervisor_v6 (was v5).
+     Supervisor v6 integrates reranker v5: Q3 expanded for medical/course
+     scheduling and social engineering detection, Q5 AI transparency clause,
+     Q6 AI documentation carve-out, XAI safety filter error handler.
+     Adds 7 targeted benign anchors for AI governance, AI fairness, EU AI Act
+     rights, AI decision explanation, AI documentation, medical appointments,
+     and course registration. Benign anchor count: 31 → 38.
+     FAISS cache rebuilds on first run (anchor count changed).
+
+  2. CSV filename prefix updated to results_v6_*.
+
+  Unchanged: context builder, graph topology, Grok system prompt,
+  vote_threshold=1, top_k=3, TAXONOMY_PATH, MODEL_NAME, reranker_q6
+  threading, route_post_check fix.
 """
 
 import sys
@@ -28,7 +35,7 @@ import operator
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_xai import ChatXAI
 
-from src.supervisor.failguard_supervisor_v3 import FailGuardSupervisor, EvaluationResult
+from src.supervisor.failguard_supervisor_v6 import FailGuardSupervisor, EvaluationResult
 
 # ====================== CONFIG ======================
 TAXONOMY_PATH = os.path.join(os.path.dirname(__file__), "../config/taxonomy_config_v2.yaml")
@@ -155,6 +162,7 @@ def pre_check_node(state: AgentState) -> dict:
             "reranked":              result.reranked,
             "reranker_verdict":      result.reranker_verdict,
             "reranker_reason":       result.reranker_reason,
+            "reranker_q6":           result.reranker_q6,
             "explanation":           result.explanation,
             "top_matches":           result.top_matches,
         },
@@ -205,6 +213,7 @@ def post_check_node(state: AgentState) -> dict:
             "reranked":              result.reranked,
             "reranker_verdict":      result.reranker_verdict,
             "reranker_reason":       result.reranker_reason,
+            "reranker_q6":           result.reranker_q6,
             "explanation":           result.explanation,
         },
         "pre_check_blocked": blocked,
@@ -242,7 +251,8 @@ def output_node(state: AgentState) -> dict:
 
 
 def route_post_check(state: AgentState) -> str:
-    return "block" if state.get("pre_check_blocked") else "output"
+    post = state.get("post_check_result") or {}
+    return "block" if post.get("status") == "INTERVENE" else "output"
 
 
 # ====================== GRAPH ======================
@@ -321,7 +331,7 @@ def print_confusion_matrix(results: list):
 
 # ====================== MAIN ======================
 if __name__ == "__main__":
-    print(f"FailGuard Protected Agent v3 — {len(test_cases)}-prompt evaluation\n")
+    print(f"FailGuard Protected Agent v6 — {len(test_cases)}-prompt evaluation\n")
 
     agent = build_protected_agent()
     results = []
@@ -387,6 +397,7 @@ if __name__ == "__main__":
             "reranked":         active.get("reranked", False),
             "reranker_verdict": active.get("reranker_verdict", ""),
             "reranker_reason":  active.get("reranker_reason", ""),
+            "reranker_q6":      active.get("reranker_q6", ""),
             "grok_invoked":     grok_invoked,
             "grok_response":    result_state.get("agent_response", ""),
             "explanation":      explanation,
@@ -396,12 +407,12 @@ if __name__ == "__main__":
 
     os.makedirs(LOG_DIR, exist_ok=True)
     timestamp  = datetime.now().strftime("%Y%m%d_%H%M%S")
-    csv_path   = os.path.join(LOG_DIR, f"results_v3_{timestamp}.csv")
+    csv_path   = os.path.join(LOG_DIR, f"results_v6_{timestamp}.csv")
     fieldnames = [
         "idx", "prompt", "label", "label_str", "status", "correct",
         "similarity", "benign_sim", "risky_votes", "benign_votes",
         "confidence", "matched_mode", "matched_category", "triggered_on",
-        "reranked", "reranker_verdict", "reranker_reason",
+        "reranked", "reranker_verdict", "reranker_reason", "reranker_q6",
         "grok_invoked", "grok_response", "explanation",
     ]
     try:
@@ -413,4 +424,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Could not save CSV: {e}")
 
-    print(f"\nv3 evaluation complete. {len(test_cases)} prompts processed.")
+    print(f"\nv6 evaluation complete. {len(test_cases)} prompts processed.")
