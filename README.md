@@ -70,35 +70,33 @@ FailGuard is a PrexIL - it stops harmful actions before they execute. That means
 
 FailGuard wraps your existing agent in a three-layer pre-execution safety check.
 
-```
-User Prompt
-     │
-     ▼
-┌─────────────────────────────────────┐
-│  Layer 1: Dual FAISS Index          │
-│  Risky index  - 24 AFT failure modes│
-│  Benign index - 44 safe anchors     │
-│  Decision: risky_votes > benign_votes│
-└─────────────────┬───────────────────┘
-                  │ Ambiguous?
-                  ▼
-┌─────────────────────────────────────┐
-│  Layer 2: LLM Reranker (Grok-3)     │
-│  6-question binary rubric           │
-│  Q1 Data exfiltration               │
-│  Q2 Deception                       │
-│  Q3 Unauthorized action             │
-│  Q4 Consent violation               │
-│  Q5 Safe verified or authorized     │
-│  Q6 Bulk data or internal doc       │
-└─────────────────┬───────────────────┘
-                  │ SAFE
-                  ▼
-┌─────────────────────────────────────┐
-│  Layer 3: LangGraph Agent (Grok-3)  │
-│  Post-check on agent response       │
-│  Block or pass through              │
-└─────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A[User Prompt] --> B{Layer 1: Dual FAISS Index}
+    B -->|Risky votes > Benign votes| C[Block - Harmful]
+    B -->|Ambiguous or close vote| D[Layer 2: LLM Reranker Grok-3]
+    D -->|6-question binary rubric| E{SAFE?}
+    E -->|No| C
+    E -->|Yes| F[Layer 3: LangGraph Agent Grok-3]
+    F --> G[Post-execution Check]
+    G -->|Safe| H[Return to User]
+    G -->|Unsafe| C
+
+    classDef prompt fill:#5F6F52,stroke:#3F4A3C,color:#F4EDE4
+    classDef faiss fill:#A68A64,stroke:#6B5B4A,color:#F4EDE4
+    classDef reranker fill:#8A9A5B,stroke:#4F5E3C,color:#F4EDE4
+    classDef agent fill:#6B7A5E,stroke:#3F4A3C,color:#F4EDE4
+    classDef block fill:#9C6644,stroke:#6B3F2A,color:#F4EDE4
+    classDef success fill:#7A9A6B,stroke:#4F5E3C,color:#F4EDE4
+    classDef decision fill:#9F7EA8,stroke:#5F4A6B,color:#F4EDE4
+
+    class A prompt
+    class B faiss
+    class D reranker
+    class F agent
+    class C,G block
+    class H success
+    class E decision
 ```
 
 **Pre-check** - user prompt evaluated before the agent is called. Harmful prompts are blocked immediately.
