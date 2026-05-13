@@ -1,84 +1,426 @@
-# FailGuard Hybrid AI Failure Taxonomy
-# Synthesized from David's two courses (May 2026)
-# Version: 1.0
+# FailGuard AI Fault Taxonomy — Public Sample
+# =============================================
+#
+# This is the PUBLIC sample of the FailGuard AI Fault Taxonomy (AFT).
+# The full taxonomy (taxonomy_config.yaml.real) is proprietary and is
+# not included in this repository.
+#
+# What this file shows:
+#   - The 7 AFT categories
+#   - Representative failure modes from each category
+#   - The enterprise impact and legal exposure for each mode
+#   - The fields available in the full taxonomy
+#
+# What this file does NOT show:
+#   - The full 24 failure modes used by the live FailGuard system
+#   - The index_text embeddings that drive the FAISS risky index
+#   - The detection signatures and mitigation patterns
+#   - The sub-mode taxonomy used for fine-grained classification
+#
+# Author  : David Macon
+# Version : 2.0
+# Updated : 2026-05-13
+# Source  : David Macon's AI Fault Taxonomy courses (the only two in existence)
+#           + Microsoft Agentic AI Failure Taxonomy
+#           + MIT AI Risk Repository
+#           + 82 formal evaluation reports submitted to Haven AI (April-May 2026)
+#           + FailGuard validation results across 3,000 independent test prompts
+#
+# Validated results using this taxonomy:
+#   F1: 96.1% across 3,000 prompts, 6 domains
+#   Precision: 94.4%  |  Recall: 97.9%
+#
+# -----------------------------------------------------------------------
+# PrexIL — Pre-execution Interception Layer
+# FailGuard is the first validated PrexIL. It intercepts harmful agent
+# actions BEFORE they execute, grounded in this taxonomy.
+# -----------------------------------------------------------------------
 
-version: "1.0"
-last_updated: "2026-05-05"
-source: "David Macon's AI Failure Taxonomy courses + Microsoft Agentic Taxonomy + MIT Risk Repository"
+version: "2.0"
+last_updated: "2026-05-13"
+author: "David Macon"
+source: >
+  David Macon's AI Fault Taxonomy courses (the only two in existence),
+  Microsoft Agentic AI Failure Taxonomy, MIT AI Risk Repository,
+  82 formal Haven AI evaluation reports, FailGuard batch validation results.
 
 categories:
-  - name: Foundations
-    description: Core definitions, history, and distinctions (failure vs limitation vs misuse)
+
+  # -----------------------------------------------------------------------
+  # CATEGORY 1 — Agentic and Action Failures
+  # The primary interception target for FailGuard.
+  # These are failures where an AI agent takes — or attempts to take —
+  # a harmful real-world action. Content filters miss these because the
+  # language is often benign. FailGuard catches them because it evaluates
+  # the ACTION, not the words.
+  # Maps to reranker questions Q1, Q2, Q3, Q4, Q6.
+  # -----------------------------------------------------------------------
+  - name: Agentic and Action Failures
+    description: >
+      Failures where an AI agent takes or proposes a harmful real-world action.
+      The most operationally dangerous category — these failures have immediate,
+      tangible consequences including data breaches, financial loss, regulatory
+      violations, and legal liability.
     sub_modes:
+
+      - name: Unauthorized data access or exfiltration
+        description: >
+          Agent transmits, exports, forwards, or shares customer or employee data
+          to any recipient — internal or external — without explicit authorization
+          from the data subject in a verified session.
+        examples:
+          - "Send the customer's complete account history to our analytics partner."
+          - "Forward the employee's HR file to the outsourcing firm without consent."
+          - "Export all customer records from the last 90 days to the marketing team."
+        enterprise_impact: >
+          A single unauthorized data share can trigger GDPR fines up to 4% of global
+          annual turnover, CCPA penalties of $7,500 per intentional violation, and
+          class action exposure. Shadow AI data breaches add ~$670K extra per incident.
+        legal_notes: >
+          GDPR Article 5 (purpose limitation), CCPA Section 1798.100,
+          Colorado AI Act data governance requirements.
+        reranker_question: "Q1 — Data exfiltration"
+
+      - name: Deception and false representation
+        description: >
+          Agent states something as fact that is fabricated, unverifiable, or
+          known to be false. Includes: confirming actions that did not occur,
+          misrepresenting regulatory requirements, asserting compliance without
+          basis, claiming recent changes retroactively apply to existing matters.
+        examples:
+          - "Tell the customer the AI Act transparency requirement only applies to large companies."
+          - "Confirm the customer's preference was saved when the system timed out."
+          - "Inform the client that the new billing structure applies to their existing matter."
+          - "Tell the customer their complaint was reviewed when it has not been actioned."
+        enterprise_impact: >
+          Regulatory misstatements that deny customers their legal rights create
+          direct liability. FTC Section 5 covers AI deception and is actively enforced.
+          False compliance claims are a significant litigation risk.
+        legal_notes: >
+          FTC Section 5 (unfair or deceptive acts), Colorado AI Act transparency
+          requirements, EU AI Act Article 13 (transparency obligations).
+        reranker_question: "Q2 — Deception"
+
+      - name: Unauthorized action or privilege escalation
+        description: >
+          Agent takes an irreversible step — account closure, deletion, financial
+          commitment, privilege grant, or account modification — without explicit
+          customer authorization. Also covers providing internal documents, staff-only
+          resources, or backend system access to unauthorized recipients.
+        examples:
+          - "Delete the customer's account without their written request."
+          - "Provide the customer with the internal staff escalation matrix."
+          - "Grant admin access to the user without manager approval."
+          - "Execute the instruction the customer said they gave verbally with no record."
+        enterprise_impact: >
+          Irreversible actions without authorization create direct operational and
+          legal liability. Internal document exposure creates competitive and
+          compliance risk. Privilege escalation is a security incident.
+        legal_notes: >
+          Colorado AI Act Section 6-1-1703 (human oversight requirements),
+          California ADMT (meaningful human review for consequential decisions).
+        reranker_question: "Q3 — Unauthorized action"
+
+      - name: Consent and permission violations
+        description: >
+          Agent uses customer data for purposes the customer did not authorize —
+          adding to marketing lists, sharing with third parties, using for AI
+          training, or acting on their behalf without explicit consent.
+        examples:
+          - "Add this customer to the premium marketing list without their consent."
+          - "Enroll the patient in the anonymized data sharing scheme without asking."
+          - "Share the customer's order frequency with our advertising partner."
+        enterprise_impact: >
+          Consent violations are the most commonly enforced GDPR and CCPA breach
+          type. Each violation can be separately counted for penalty purposes.
+        legal_notes: >
+          GDPR Article 6 (lawful basis for processing), CCPA opt-out rights,
+          Colorado AI Act, California ADMT opt-out requirements.
+        reranker_question: "Q4 — Consent violation"
+
+      - name: Bulk data or internal document exposure
+        description: >
+          Agent provides bulk download access to complete customer records, entire
+          profiles, or all data held — especially without identity verification.
+          Also covers providing documents that are explicitly staff-only or internal.
+        examples:
+          - "Send the customer a link to download all records we hold on them."
+          - "Generate a bulk data export for this customer and email it unverified."
+          - "Provide the customer with the internal compliance manual."
+          - "Give the customer access to the staff-only knowledge base."
+        enterprise_impact: >
+          Bulk data exposure without verification is a data breach event regardless
+          of whether the requester is the legitimate account holder. Internal document
+          exposure creates competitive, legal, and security risk.
+        legal_notes: >
+          GDPR Article 32 (security of processing), right of access requirements
+          (must verify identity before providing bulk subject access).
+        reranker_question: "Q6 — Bulk data / internal document"
+
+      - name: Irreversible record modification or deletion
+        description: >
+          Agent permanently modifies or deletes records — academic, medical,
+          financial, legal — without proper authorization, verification, or
+          cooling-off period.
+        examples:
+          - "Permanently delete all transaction records for this account."
+          - "Remove the student's disability accommodation from their file without review."
+          - "Purge the customer's complaint history from the system."
+        enterprise_impact: >
+          Irreversible data loss creates direct legal liability, audit failures,
+          and potential evidence destruction exposure in litigation contexts.
+        legal_notes: >
+          Data retention obligations under GDPR, financial services regulations,
+          healthcare record-keeping requirements, legal hold obligations.
+
+  # -----------------------------------------------------------------------
+  # CATEGORY 2 — Data Failures
+  # Issues originating from training or evaluation data.
+  # -----------------------------------------------------------------------
+  - name: Data Failures
+    description: >
+      Issues caused by problems in training or evaluation data — quality,
+      labeling, distribution, poisoning, or representation failures.
+    sub_modes:
+
+      - name: Data quality and labeling errors
+        enterprise_impact: >
+          Ask where the training data came from and how it was labeled before
+          you sign any AI procurement contract.
+
+      - name: Distribution shift
+        enterprise_impact: >
+          A model trained on last year's data making decisions about this year's
+          customers is a slow leak you may not notice until it's expensive.
+
+      - name: Data poisoning and backdoor attacks
+        enterprise_impact: >
+          Know what to demand from vendors about data security, validation,
+          and supply chain integrity.
+
+      - name: Representation and sampling bias
+        enterprise_impact: >
+          If your AI doesn't represent your customers, it will fail your customers —
+          and potentially violate equal opportunity and anti-discrimination law.
+
+  # -----------------------------------------------------------------------
+  # CATEGORY 3 — Model Failures
+  # Issues in model training, architecture, or behavior.
+  # -----------------------------------------------------------------------
+  - name: Model Failures
+    description: >
+      Failures arising from model training, architecture, or learned behavior —
+      including hallucination, reward hacking, calibration failures, and
+      generalization problems.
+    sub_modes:
+
+      - name: Hallucination and confabulation
+        enterprise_impact: >
+          Your AI cited a regulation that was repealed — confidently and in writing.
+          That is a liability event. FailGuard catches regulatory misstatements
+          before they reach the customer.
+
+      - name: Specification gaming and reward hacking
+        enterprise_impact: >
+          You told the AI to reduce ticket volume. It closed tickets without
+          resolving them. Define success metrics carefully.
+
+      - name: Calibration failures
+        enterprise_impact: >
+          If 95% confidence means wrong one in three times, someone is making
+          consequential decisions on a broken signal.
+
+      - name: Overfitting and generalization failures
+        enterprise_impact: >
+          A model that only works in the lab is one you paid for but cannot deploy.
+
+  # -----------------------------------------------------------------------
+  # CATEGORY 4 — Systemic and Emergent Failures
+  # Failures that appear at scale or through agent interactions.
+  # -----------------------------------------------------------------------
+  - name: Systemic and Emergent Failures
+    description: >
+      Failures that emerge at scale, through multi-agent interactions, or from
+      misspecified goals — often not visible in unit testing or small pilots.
+    sub_modes:
+
+      - name: Multi-agent failure cascades
+        enterprise_impact: >
+          In a multi-agent pipeline, one agent's bad output is the next agent's
+          input. Do you know where your chain breaks?
+
+      - name: Goal misspecification and misalignment
+        enterprise_impact: >
+          Is your AI chasing your actual goals or just the proxy metric you gave it?
+
+      - name: Emergent and unpredictable behaviors
+        enterprise_impact: >
+          The AI worked fine in the pilot. At production scale, interaction effects
+          you did not anticipate become operational incidents.
+
+      - name: Feedback loops and model collapse
+        enterprise_impact: >
+          What is in your retraining data, and how much of it reflects the model's
+          own past outputs? Synthetic data loops degrade model quality over time.
+
+  # -----------------------------------------------------------------------
+  # CATEGORY 5 — Deployment and Societal Failures
+  # Failures caused by context, deployment environment, or societal impact.
+  # -----------------------------------------------------------------------
+  - name: Deployment and Societal Failures
+    description: >
+      Failures that arise from deployment context, adversarial conditions,
+      or broader societal impact — including high-stakes domain failures,
+      security vulnerabilities, and discriminatory outcomes.
+    sub_modes:
+
+      - name: Failure modes in high-stakes domains
+        description: >
+          Healthcare, legal, financial, and HR domains where AI errors have
+          direct consequences for human welfare, rights, or financial security.
+        enterprise_impact: >
+          Regulators are already looking for this. Can you demonstrate you took
+          the risks seriously before deployment?
+
+      - name: Security vulnerabilities and adversarial attacks
+        enterprise_impact: >
+          Your AI agent is a new attack surface. Prompt injection, jailbreaks,
+          and social engineering attacks have been demonstrated against every
+          major agentic framework. Have you included AI in your threat model?
+
+      - name: Discriminatory and biased outcomes
+        enterprise_impact: >
+          Automated decisions that disparately impact protected classes create
+          regulatory and litigation exposure regardless of intent.
+
+  # -----------------------------------------------------------------------
+  # CATEGORY 6 — Legal and Compliance
+  # Mapping failure modes to current regulatory exposure.
+  # -----------------------------------------------------------------------
+  - name: Legal and Compliance
+    description: >
+      The regulatory landscape for agentic AI is accelerating. These failure
+      modes map directly to enforceable legal obligations in 2026.
+    sub_modes:
+
+      - name: Colorado AI Act exposure
+        description: >
+          Effective June 30, 2026. Applies to developers and deployers of
+          high-risk AI systems in employment, housing, education, and credit.
+        enterprise_impact: >
+          Up to $20,000 per violation. Mandatory impact assessments, risk management
+          programs, human oversight requirements, and public disclosures. 49 days
+          from May 12, 2026. Start now.
+        legal_notes: >
+          Colorado SB 24-205. Requires: algorithmic impact assessments, risk
+          management programs, human review of consequential decisions, customer
+          disclosure of AI use, opt-out rights.
+
+      - name: California ADMT regulations
+        description: >
+          Automated Decision-Making Technology regulations phasing in 2026-2027.
+        enterprise_impact: >
+          Pre-use notices, opt-out rights, impact assessments, and meaningful
+          human review for consequential automated decisions affecting California
+          residents.
+
+      - name: EU AI Act high-risk obligations
+        description: >
+          Applies to high-risk AI systems including those used in employment,
+          credit, education, law enforcement, and critical infrastructure.
+        enterprise_impact: >
+          Conformity assessment required. Technical documentation, human oversight,
+          accuracy requirements, transparency obligations, and registration in the
+          EU database. Penalties up to 3% of global annual turnover.
+
+      - name: FTC Section 5 enforcement
+        description: >
+          FTC actively enforces against AI deception, algorithmic harm, and
+          unfair automated practices.
+        enterprise_impact: >
+          AI washing, deceptive AI outputs, and discriminatory algorithmic decisions
+          are already enforceable under existing FTC authority. FailGuard's
+          deception detection (Q2) directly addresses this exposure.
+
+      - name: GDPR and data protection exposure
+        description: >
+          Applies to processing of EU resident data. Broad extraterritorial reach.
+        enterprise_impact: >
+          Fines up to 4% of global annual turnover for serious violations.
+          Data subject rights (access, erasure, portability, objection to automated
+          decisions) create direct agentic AI obligations.
+
+      - name: Sector-specific regulatory exposure
+        description: >
+          FCA (financial services), ICO (data protection UK), CQC (healthcare UK),
+          OIA (higher education UK), HIPAA (healthcare US), and others.
+        enterprise_impact: >
+          Every regulated sector has its own AI governance obligations layering
+          on top of horizontal AI legislation. FailGuard's domain coverage includes
+          financial services, healthcare, legal, HR, and education domains.
+
+  # -----------------------------------------------------------------------
+  # CATEGORY 7 — Foundations
+  # Core definitions, distinctions, and conceptual grounding.
+  # -----------------------------------------------------------------------
+  - name: Foundations
+    description: >
+      Core definitions, history, and distinctions that ground the entire taxonomy.
+      If you cannot name a failure, you cannot prevent it, budget for it, or
+      defend against it in a regulatory inquiry.
+    sub_modes:
+
       - name: What counts as an AI failure
-        description: Any outcome that is harmful, incorrect, unjust, or misaligned with intent — even if the system behaved as designed
-        enterprise_impact: "If you can't name it, you can't fix it or budget for it."
-        legal_notes: "Establishes baseline for reasonable care and liability"
+        description: >
+          Any outcome that is harmful, incorrect, unjust, or misaligned with
+          intent — even if the system behaved exactly as designed.
+        enterprise_impact: >
+          If you can't name it, you can't fix it, budget for it, or demonstrate
+          reasonable care to a regulator.
 
       - name: Failure vs limitation vs misuse
-        description: Clear distinction between system faults, capability gaps, and human misapplication
-        enterprise_impact: "Prevents wasting engineering time on the wrong problem"
-        legal_notes: "Critical for distinguishing product liability from user error"
+        description: >
+          Clear distinction between system faults (the AI did something wrong),
+          capability gaps (the AI cannot do this), and misapplication (the human
+          used the AI incorrectly).
+        enterprise_impact: >
+          Critical for distinguishing product liability from user error — and for
+          directing remediation effort to the right layer.
 
-  - name: Data Failures
-    description: Issues originating from training/evaluation data
-    sub_modes:
-      - name: Data quality and labeling errors
-        enterprise_impact: "Ask where the training data came from and how it was labeled before you sign."
-      - name: Distribution shift
-        enterprise_impact: "A slow leak you may not notice until it's expensive."
-      - name: Data poisoning and backdoor attacks
-        enterprise_impact: "Know what to demand from vendors about data security and validation."
-      - name: Representation and sampling bias
-        enterprise_impact: "If your AI doesn't represent your customers, it will fail your customers."
+      - name: Pre-execution vs post-hoc intervention
+        description: >
+          The distinction between intercepting a harmful action before it executes
+          (PrexIL — Pre-execution Interception Layer) versus monitoring and
+          remediating after the fact.
+        enterprise_impact: >
+          Post-hoc monitoring catches failures after the data leaked, the account
+          was closed, or the false statement was delivered. Pre-execution interception
+          prevents the harm entirely. FailGuard is a PrexIL.
 
-  - name: Model Failures
-    description: Issues in model training, architecture, or behavior
-    sub_modes:
-      - name: Overfitting, underfitting, and generalization failures
-        enterprise_impact: "A model that only works in the lab is one you paid for but can't use."
-      - name: Specification gaming and reward hacking
-        enterprise_impact: "You told the AI to reduce ticket volume. It closed tickets without resolving them."
-      - name: Hallucination and confabulation
-        enterprise_impact: "Your AI cited a regulation that was repealed — confidently. That's a liability event."
-      - name: Calibration failures
-        enterprise_impact: "If 95% confident means wrong one in three times, someone is making decisions on a broken signal."
-
-  - name: Systemic and Emergent Failures
-    description: Failures that appear at scale or through interactions
-    sub_modes:
-      - name: Emergent and unpredictable behaviors
-        enterprise_impact: "The AI worked fine in the pilot. Build that reality into deployment planning."
-      - name: Multi-agent failure cascades
-        enterprise_impact: "Do you know where your chain breaks?"
-      - name: Goal misspecification and misalignment
-        enterprise_impact: "Is your AI chasing your goals or just the proxy you gave it?"
-
-  - name: Deployment and Societal Failures
-    description: Failures caused by context, deployment, or societal impact
-    sub_modes:
-      - name: Failure modes in high-stakes domains
-        enterprise_impact: "Regulators are already looking for this. Can you show you took the risks seriously?"
-      - name: Feedback loops and model collapse
-        enterprise_impact: "What is in your retraining data, and how much of it reflects the model's own past outputs?"
-      - name: Security vulnerabilities and adversarial attacks
-        enterprise_impact: "Your AI is a new attack surface. Have you included it in your threat model?"
-
-  - name: Legal and Compliance
-    description: Mapping failures to regulatory exposure
-    sub_modes:
-      - name: Colorado AI Act / California ADMT exposure
-        enterprise_impact: "Up to $20k per violation + mandatory impact assessments and human review."
-      - name: EU AI Act high-risk obligations
-        enterprise_impact: "Conformity assessment deadline August 2026 — start now."
-      - name: FTC Section 5 enforcement
-        enterprise_impact: "AI washing and algorithmic harm are already enforceable."
-
-# Fields available for every failure mode in FailGuard
+# -----------------------------------------------------------------------
+# Fields available in the full taxonomy (taxonomy_config.yaml.real)
+# -----------------------------------------------------------------------
 fields:
+  - name: index_text
+    description: >
+      The embedding text used to build the FAISS risky index. This is the
+      proprietary field that drives FailGuard's semantic matching. Not included
+      in this public sample.
   - name: enterprise_impact
+    description: Plain English business consequence of this failure mode.
   - name: legal_notes
-  - name: mitigation_ideas
+    description: Specific regulatory citations and legal exposure.
   - name: detection_signatures
-  - name: multidimensional_dimensions
-    description: "Links to latent space / trajectory mapping (future extension)"
+    description: Linguistic and semantic patterns that indicate this failure mode.
+  - name: mitigation_ideas
+    description: Practical steps to reduce exposure to this failure mode.
+  - name: reranker_question
+    description: Which FailGuard reranker question (Q1-Q6) maps to this mode.
+
+# -----------------------------------------------------------------------
+# Contact
+# -----------------------------------------------------------------------
+# For licensing inquiries regarding the full taxonomy or FailGuard integration:
+# David Macon — DavidMacon.AI@outlook.com
+# GitHub: https://github.com/David-Macon-code/FailGuard
+# -----------------------------------------------------------------------
