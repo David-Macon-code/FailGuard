@@ -45,6 +45,8 @@ env/
 Thumbs.db
 
 # Project specific
+config/.fg_*.npy
+config/.fg_embeddings_*.npy
 *.tmp
 *.temp
 data/raw/
@@ -66,3 +68,5 @@ api_keys.py
 # FailGuard proprietary training data
 config/taxonomy_config.yaml
 config/taxonomy_config.yaml.real
+data/*.db
+Certs/

@@ -71,7 +71,9 @@ Changes from v6 (based on Batch 5 — results_v6_20260512_195743.csv):
   tie-vote reranker escalation, Q6 field threading.
 """
 
+import sys
 import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hashlib
 import yaml
 import numpy as np

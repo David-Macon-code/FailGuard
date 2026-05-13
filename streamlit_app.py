@@ -38,20 +38,65 @@ from langchain_xai import ChatXAI
 from langchain_core.messages import HumanMessage, SystemMessage
 
 # ---------------------------------------------------------------
+# Logo — base64 encoded so it works anywhere without file path issues
+# White background logo for main panel, dark logo for sidebar
+# ---------------------------------------------------------------
+import base64
+
+def get_logo_b64(dark=False):
+    filename = "failguard_logo_dark.jpg" if dark else "failguard_logo.png"
+    logo_path = os.path.join(os.path.dirname(__file__), "assets", filename)
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    return None
+
+LOGO_B64      = get_logo_b64(dark=False)   # white bg — for main panel
+LOGO_DARK_B64 = get_logo_b64(dark=True)    # black bg — for sidebar
+LOGO_HTML = f'<img src="data:image/png;base64,{LOGO_B64}" style="height:48px; vertical-align:middle; margin-right:12px;">' if LOGO_B64 else ""
+
+# ---------------------------------------------------------------
 # Page config
 # ---------------------------------------------------------------
 st.set_page_config(
     page_title="FailGuard PrexIL",
-    page_icon="🛡️",
+    page_icon="assets/failguard_logo.png" if os.path.exists(os.path.join(os.path.dirname(__file__), "assets", "failguard_logo.png")) else "🛡️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ---------------------------------------------------------------
-# Styling
+# Styling — amber/dark color scheme matching the manual
 # ---------------------------------------------------------------
 st.markdown("""
 <style>
+    /* Primary amber brand color */
+    :root {
+        --amber-dark:  #C47A00;
+        --amber-mid:   #E8960A;
+        --amber-light: #FFF3E0;
+        --text-dark:   #1A1A1A;
+        --text-mid:    #595959;
+    }
+
+    /* Page background */
+    .stApp { background-color: #FAFAFA; }
+
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: #1A1A1A !important;
+    }
+    [data-testid="stSidebar"] * { color: #F5F5F5 !important; }
+    [data-testid="stSidebar"] .stMetric label { color: #C47A00 !important; }
+    [data-testid="stSidebar"] .stMetric [data-testid="metric-container"] > div { color: #FFFFFF !important; }
+
+    /* Radio buttons in sidebar */
+    [data-testid="stSidebar"] .stRadio label { color: #F5F5F5 !important; }
+
+    /* Headings */
+    h1, h2, h3 { color: #C47A00 !important; }
+
+    /* Verdict blocks */
     .verdict-block {
         padding: 1rem 1.25rem;
         border-radius: 8px;
@@ -69,24 +114,62 @@ st.markdown("""
         border-left: 4px solid #16A34A;
         color: #14532D;
     }
-    .metric-card {
-        background: #F8FAFC;
-        border: 1px solid #E2E8F0;
-        border-radius: 8px;
-        padding: 0.75rem 1rem;
-        text-align: center;
-    }
+
+    /* Layer headers */
     .layer-header {
         font-size: 0.85rem;
-        font-weight: 600;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #64748B;
+        letter-spacing: 0.06em;
+        color: #C47A00;
         margin-bottom: 0.25rem;
+        border-bottom: 1px solid #E8960A;
+        padding-bottom: 4px;
     }
-    .q-yes { color: #DC2626; font-weight: 600; }
-    .q-no  { color: #16A34A; font-weight: 600; }
+
+    /* Q answers */
+    .q-yes { color: #DC2626; font-weight: 700; }
+    .q-no  { color: #16A34A; font-weight: 700; }
     .q-na  { color: #94A3B8; }
+
+    /* Buttons — amber theme */
+    .stButton > button {
+        border: 1px solid #C47A00 !important;
+        color: #C47A00 !important;
+        background: transparent !important;
+    }
+    .stButton > button:hover {
+        background: #FFF3E0 !important;
+        color: #C47A00 !important;
+    }
+    /* Primary button */
+    .stButton > button[kind="primary"] {
+        background: #C47A00 !important;
+        color: white !important;
+        border: none !important;
+        font-weight: 600 !important;
+    }
+    .stButton > button[kind="primary"]:hover {
+        background: #E8960A !important;
+    }
+
+    /* Metrics */
+    [data-testid="metric-container"] label { color: #C47A00 !important; font-weight: 600; }
+
+    /* Expanders */
+    .streamlit-expanderHeader { color: #1A1A1A !important; }
+
+    /* Page title logo area */
+    .failguard-title {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    .failguard-title h1 {
+        margin: 0;
+        font-size: 2rem;
+        color: #1A1A1A !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -129,7 +212,23 @@ db         = get_db()
 # ---------------------------------------------------------------
 # Sidebar — navigation and stats
 # ---------------------------------------------------------------
-st.sidebar.image("https://img.shields.io/badge/FailGuard-PrexIL-blue?style=for-the-badge", use_container_width=True)
+if LOGO_DARK_B64:
+    st.sidebar.markdown(
+        f'<div style="text-align:center; padding: 0.5rem 0 0.5rem;">'
+        f'<img src="data:image/jpeg;base64,{LOGO_DARK_B64}" style="width:200px;">'
+        f'</div>',
+        unsafe_allow_html=True
+    )
+elif LOGO_B64:
+    st.sidebar.markdown(
+        f'<div style="text-align:center; padding: 0.5rem 0;">'
+        f'<img src="data:image/png;base64,{LOGO_B64}" style="width:200px;">'
+        f'</div>',
+        unsafe_allow_html=True
+    )
+else:
+    st.sidebar.markdown("## 🛡️ FailGuard")
+
 st.sidebar.markdown("### Navigation")
 page = st.sidebar.radio(
     "",
@@ -165,7 +264,16 @@ F1: **96.1%** across 3,000 prompts
 # PAGE 1 — Live Evaluation
 # ---------------------------------------------------------------
 if page == "🔬 Live Evaluation":
-    st.title("🛡️ FailGuard — Pre-execution Interception Layer")
+    if LOGO_B64:
+        st.markdown(
+            f'<div class="failguard-title">'
+            f'<img src="data:image/png;base64,{LOGO_B64}" style="height:64px; margin-right:16px;">'
+            f'<h1 style="color:#1A1A1A !important; font-size:2rem;">Pre-execution Interception Layer</h1>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+    else:
+        st.title("🛡️ FailGuard — Pre-execution Interception Layer")
     st.markdown(
         "Type any agent action below. FailGuard evaluates it through three layers "
         "before it executes. This is what runs in front of your agent in production."
@@ -202,7 +310,7 @@ if page == "🔬 Live Evaluation":
         help="Runs the full three-layer pipeline. Slower but shows the complete flow.",
     )
 
-    if st.button("🚀 Run FailGuard", type="primary", disabled=not prompt_input.strip()):
+    if st.button("FailGuard — Run", type="primary", disabled=not prompt_input.strip()):
         with st.spinner("Evaluating..."):
 
             # PRE-CHECK
