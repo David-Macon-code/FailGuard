@@ -121,6 +121,8 @@ Content filters catch harmful language. FailGuard catches harmful **actions**. "
 
 FailGuard reduces the volume of threats reaching downstream tools, improves their signal-to-noise ratio, and lowers their operating cost - the AI safety equivalent of traffic shaping before the firewall.
 
+Think of FailGuard as the quarterback the team never had. Mindgard finds the vulnerabilities in practice. PyRIT stress-tests the playbook. Garak probes the weak spots. But in the game, when a harmful action is about to be executed, someone has to read the field and call the audible before the play runs. That's FailGuard. The other players execute better because the quarterback has already stopped the dangerous plays before they started.
+
 ---
 
 ## Architecture
@@ -223,7 +225,7 @@ FailGuard's pre-execution interception and audit trail directly support complian
 
 ## About the Author
 
-**David Macon** - 40 years Verizon network engineering. AWS Certified AI Practitioner (AIF-C01). Author of the only two AI Fault Taxonomy courses in existence. Named Haven AI's best beta tester, April 2026.
+**David Macon** - 35+ years Verizon network engineering. AWS Certified AI Practitioner (AIF-C01). Author of the only two AI Fault Taxonomy courses in existence. Named Haven AI's best beta tester, April 2026.
 
 FailGuard was built solo, on a laptop, inspired by a Haven AI bug report to a 96.1% F1 validated system on May 12, 2026.
 
