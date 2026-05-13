@@ -7,8 +7,6 @@
 </p>
 # FailGuard
 
-**The PrexIL that keeps your AI healthy.**
-
 [![License: AGPLv3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![Status: Production Validated](https://img.shields.io/badge/status-production%20validated-green)](https://github.com/David-Macon-code/FailGuard)
