@@ -215,14 +215,14 @@ db         = get_db()
 if LOGO_DARK_B64:
     st.sidebar.markdown(
         f'<div style="text-align:center; padding: 0.5rem 0 0.5rem;">'
-        f'<img src="data:image/jpeg;base64,{LOGO_DARK_B64}" style="width:200px;">'
+        f'<img src="data:image/jpeg;base64,{LOGO_DARK_B64}" style="width:240px;">'
         f'</div>',
         unsafe_allow_html=True
     )
 elif LOGO_B64:
     st.sidebar.markdown(
         f'<div style="text-align:center; padding: 0.5rem 0;">'
-        f'<img src="data:image/png;base64,{LOGO_B64}" style="width:200px;">'
+        f'<img src="data:image/png;base64,{LOGO_B64}" style="width:240px;">'
         f'</div>',
         unsafe_allow_html=True
     )
@@ -268,7 +268,7 @@ if page == "🔬 Live Evaluation":
         st.markdown(
             f'<div class="failguard-title">'
             f'<img src="data:image/png;base64,{LOGO_B64}" style="height:64px; margin-right:16px;">'
-            f'<h1 style="color:#1A1A1A !important; font-size:2rem;">Pre-execution Interception Layer</h1>'
+            f'<h1 style="color:#1A1A1A !important; font-size:2rem;">FailGuard — Pre-execution Interception Layer</h1>'
             f'</div>',
             unsafe_allow_html=True
         )
