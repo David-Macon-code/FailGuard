@@ -57,6 +57,12 @@ All prompts are independent. No prompt appears in more than one batch. Each batc
 
 ---
 
+## Publication
+
+[The AI Fault Taxonomy and the PrexIL Architecture](docs/AFT_PrexIL_Publication_Macon_2026.pdf) — Macon (2026). Introduces the AFT framework and PrexIL as a new class of AI safety architecture. Validated at 96.1% F1 across 3,000 prompts.
+
+---
+
 ## Why This Matters
 
 Agentic AI is scaling faster than its safety nets.
@@ -222,9 +228,9 @@ FailGuard's pre-execution interception and audit trail directly support complian
 - [x] LLM reranker with 6-question rubric
 - [x] LangGraph pre-check + post-check pipeline
 - [x] 3,000-prompt validation across 6 domains
-- [ ] Feedback Footprint / Miss Analyzer module (In progress)
-- [ ] Streamlit UI (demo-ready)
-- [ ] AI Fault Taxonomy (AFT) formal publication
+- [x] Feedback Footprint / Miss Analyzer module
+- [x] Streamlit UI (demo-ready)
+- [x] AI Fault Taxonomy (AFT) formal publication
 - [ ] Enterprise API wrapper
 
 ---
