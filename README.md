@@ -274,20 +274,13 @@ FailGuard's pre-execution interception and audit trail directly support complian
 - [x] Feedback Footprint / Miss Analyzer — complete with auto-detection
 - [x] Streamlit UI (demo-ready)
 - [x] AI Fault Taxonomy (AFT) formal publication
-- [ ] Compliance Reporter (structured regulatory artifacts from audit database)
-- [ ] Reranker architectural fix (reduce firing rate from ~93% toward 25%)
+- [x] Compliance Reporter (structured regulatory artifacts from audit database)
+- [x] AFT course updates
 - [ ] Enterprise API wrapper (REST API for any agent framework)
-- [ ] AFT course updates
 
 ---
 
 ## Coming Next
-
-### Compliance Reporter
-
-FailGuard logs every evaluation — blocked or passed — with the failure mode, similarity scores, reranker verdict, and reason. The Compliance Reporter turns that raw audit trail into structured compliance artifacts: impact assessments, risk documentation, and human oversight records that satisfy the requirements of the Colorado AI Act, California ADMT, and EU AI Act.
-
-Every enterprise deploying high-risk AI needs to demonstrate that they have governance in place. The Compliance Reporter makes that demonstration automatic. Not a checkbox — a documented, timestamped, exportable record of every decision the system made and why.
 
 ### Enterprise API Wrapper
 
