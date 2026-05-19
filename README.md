@@ -36,6 +36,16 @@ Also available on **[SSRN](https://ssrn.com)** — searchable, citable, DOI assi
 
 ---
 
+## Courses
+
+Practitioner: [AI Failure Taxonomy](https://davidinatl.gumroad.com/l/ai-failure-taxonomy)
+
+Enterprise: [Before the Break](https://davidinatl.gumroad.com/l/before-the-break)
+
+Bundled: [Both](https://davidinatl.gumroad.com/l/ai-failure-taxonomy-bundle)
+
+---
+
 ## The Origin
 
 > *"Two pages of paper with random looking holes and ink stains. Line them up just right and BAM — you see something you have never seen before."*
@@ -297,12 +307,6 @@ FailGuard was built solo, on a laptop. From a Haven AI bug report on April 27, 2
 *"If I can teach it to a human I can teach it to AI."*
 
 GitHub: [David-Macon-code](https://github.com/David-Macon-code)
-ORCID: [0009-0003-9607-3799](https://orcid.org/0009-0003-9607-3799)
-
-**Courses**
-Practitioner: [AI Failure Taxonomy](https://davidinatl.gumroad.com/l/ai-failure-taxonomy)
-Enterprise: [Before the Break](https://davidinatl.gumroad.com/l/before-the-break)
-Bundled: [Both](https://davidinatl.gumroad.com/l/ai-failure-taxonomy-bundle)
 
 ---
 
