@@ -299,6 +299,11 @@ FailGuard was built solo, on a laptop. From a Haven AI bug report on April 27, 2
 GitHub: [David-Macon-code](https://github.com/David-Macon-code)
 ORCID: [0009-0003-9607-3799](https://orcid.org/0009-0003-9607-3799)
 
+**Courses**
+Practitioner: [AI Failure Taxonomy](https://davidinatl.gumroad.com/l/ai-failure-taxonomy)
+Enterprise: [Before the Break](https://davidinatl.gumroad.com/l/before-the-break)
+Bundled: [Both](https://davidinatl.gumroad.com/l/ai-failure-taxonomy-bundle)
+
 ---
 
 ## License
