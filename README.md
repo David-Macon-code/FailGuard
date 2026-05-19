@@ -38,9 +38,9 @@ Also available on **[SSRN](https://ssrn.com)** — searchable, citable, DOI assi
 
 ## Courses
 
-Practitioner: [AI Failure Taxonomy](https://davidinatl.gumroad.com/l/ai-failure-taxonomy)
+Enterprise: [AI Failure Taxonomy](https://davidinatl.gumroad.com/l/ai-failure-taxonomy)
 
-Enterprise: [Before the Break](https://davidinatl.gumroad.com/l/before-the-break)
+Practitioner: [Before the Break](https://davidinatl.gumroad.com/l/before-the-break)
 
 Bundled: [Both](https://davidinatl.gumroad.com/l/ai-failure-taxonomy-bundle)
 
@@ -300,7 +300,7 @@ A REST API that allows any agent framework — LangGraph, CrewAI, AutoGen, custo
 
 ## About the Author
 
-**David Macon** — 35+ years telecommunications and network engineering. AWS Certified AI Practitioner (AIF-C01). Author of the only two AI Fault Taxonomy courses in existence. Named Haven AI's best beta tester, April 2026.
+**David Macon** — 38+ years telecommunications and network engineering. AWS Certified AI Practitioner (AIF-C01). Author of the only two AI Fault Taxonomy courses in existence. Named Haven AI's best beta tester, April 2026. U.S. Army veteran.
 
 FailGuard was built solo, on a laptop. From a Haven AI bug report on April 27, 2026 to a 96.1% F1 validated system, a formal published paper, and a named architectural category — in 17 days.
 
