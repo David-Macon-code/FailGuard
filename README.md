@@ -13,17 +13,18 @@
 Pre-execution Interception Layer for agentic AI systems.
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20315310.svg)](https://doi.org/10.5281/zenodo.20315310)
+[![License: AGPLv3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
+[![Status: Production Validated](https://img.shields.io/badge/status-production%20validated-green)](https://github.com/David-Macon-code/FailGuard)
+[![F1: 96.1%](https://img.shields.io/badge/F1-96.1%25-brightgreen)](https://github.com/David-Macon-code/FailGuard)
+
+---
 
 ## 📄 Research Paper
 
 **Macon, D. (2026).** The AI Fault Taxonomy and the PrexIL Architecture: Introducing a Validated Framework for Pre-execution Interception in Agentic AI Systems. Zenodo. https://doi.org/10.5281/zenodo.20315310
 
 If you use FailGuard or reference the AI Fault Taxonomy / PrexIL architecture in your research or work, please cite the paper above.
-
-[![License: AGPLv3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
-[![Status: Production Validated](https://img.shields.io/badge/status-production%20validated-green)](https://github.com/David-Macon-code/FailGuard)
-[![F1: 96.1%](https://img.shields.io/badge/F1-96.1%25-brightgreen)](https://github.com/David-Macon-code/FailGuard)
 
 ---
 
