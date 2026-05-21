@@ -37,8 +37,6 @@ If you use FailGuard or reference the AI Fault Taxonomy / PrexIL architecture in
 **[The AI Fault Taxonomy and the PrexIL Architecture](docs/AFT_PrexIL_Publication_Macon_2026.pdf)** — Macon (2026).
 Introduces the AFT framework and PrexIL as a new class of AI safety architecture. Validated at 96.1% F1 across 3,000 prompts.
 
-Also available on **[SSRN](https://ssrn.com)** — searchable, citable, DOI assigned.
-
 **ORCID:** [0009-0003-9607-3799](https://orcid.org/0009-0003-9607-3799)
 
 ---
