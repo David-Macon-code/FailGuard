@@ -20,14 +20,6 @@ Pre-execution Interception Layer for agentic AI systems.
 
 ---
 
-## 📄 Research Paper
-
-**Macon, D. (2026).** The AI Fault Taxonomy and the PrexIL Architecture: Introducing a Validated Framework for Pre-execution Interception in Agentic AI Systems. Zenodo. https://doi.org/10.5281/zenodo.20315310
-
-If you use FailGuard or reference the AI Fault Taxonomy / PrexIL architecture in your research or work, please cite the paper above.
-
----
-
 ## What Is FailGuard?
 
 FailGuard is the first validated **Pre-execution Interception Layer (PrexIL)** for agentic AI systems.
@@ -37,6 +29,10 @@ Most AI safety tools are reactive — they monitor, alert, and remediate after s
 ---
 
 ## Publication
+
+**Macon, D. (2026).** The AI Fault Taxonomy and the PrexIL Architecture: Introducing a Validated Framework for Pre-execution Interception in Agentic AI Systems. Zenodo. https://doi.org/10.5281/zenodo.20315310
+
+If you use FailGuard or reference the AI Fault Taxonomy / PrexIL architecture in your research or work, please cite the paper above.
 
 **[The AI Fault Taxonomy and the PrexIL Architecture](docs/AFT_PrexIL_Publication_Macon_2026.pdf)** — Macon (2026).
 Introduces the AFT framework and PrexIL as a new class of AI safety architecture. Validated at 96.1% F1 across 3,000 prompts.
