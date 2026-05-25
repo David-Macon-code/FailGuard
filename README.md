@@ -89,7 +89,7 @@ All prompts are independent. No prompt appears in more than one batch. Each batc
 
 Agentic AI is scaling faster than its safety nets.
 
-- **Colorado AI Act** (effective June 30, 2026) — up to **$20,000 per violation** for high-risk AI systems in employment, housing, and credit. Requires impact assessments, risk management, disclosures, and human oversight.
+- **Colorado AI law** (effective January 01, 2027) — up to **$20,000 per violation** for high-risk AI systems in employment, housing, and credit. Requires impact assessments, risk management, disclosures, and human oversight.
 - **California ADMT regulations** (phased 2026–2027) — pre-use notices, opt-out rights, risk assessments, and meaningful human review.
 - **EU AI Act** (August 2, 2026) — high-risk AI obligations including conformity assessment, human oversight, and post-market monitoring.
 - **Shadow AI breaches** add ~$670K extra per incident on average.
