@@ -225,7 +225,7 @@ Every evaluation — blocked or passed — is written asynchronously to a SQLite
 - Verdict, triggered layer, embedding scores, vote counts
 - Reranker Q1-Q6 answers and one-sentence plain English reason
 - Automatically generated audit summary readable by a compliance officer, auditor, or court
-- Applicable regulatory flags (GDPR, CCPA, Colorado AI Act, EU AI Act, FCA, ICO, etc.)
+- Applicable regulatory flags (GDPR, CCPA, Colorado AI law, EU AI Act, FCA, ICO, etc.)
 
 Every wrong verdict during a batch run is automatically classified by root cause and logged to the Feedback Footprint — no manual import step required.
 
@@ -270,7 +270,7 @@ python -m streamlit run streamlit_app.py
 
 FailGuard was designed with the 2026 regulatory landscape in mind.
 
-**Colorado AI Act** (effective June 30, 2026): Requires developers and deployers of high-risk AI systems to implement risk management programs, conduct impact assessments, provide human oversight, and disclose AI use. Violations: up to $20,000 per violation.
+**Colorado AI law SB 26-189** (effective January 1, 2027) Replaces the original 2024 Colorado AI Act. Focuses on automated decision-making technology (ADMT) that materially influences "consequential decisions" (e.g., employment, housing, credit/lending, insurance, healthcare, education). Requires pre-use notices, disclosures for adverse decisions, explanation and appeal rights (including human review), and record retention. Up to $20,000 per violation (enforced by the Attorney General as a deceptive trade practice). Significantly scales back earlier requirements for impact assessments and risk management programs.
 
 **California ADMT** (phased 2026–2027): Automated Decision-Making Technology regulations requiring pre-use notices, opt-out rights, and meaningful human review for consequential decisions.
 
