@@ -41,13 +41,18 @@ Introduces the AFT framework and PrexIL as a new class of AI safety architecture
 
 ---
 
-## Courses
+## Courses and Certification
 
-Enterprise: [AI Failure Taxonomy](https://davidinatl.gumroad.com/l/ai-failure-taxonomy)
+The only AI Fault Taxonomy curriculum in existence.
 
-Practitioner: [Before the Break](https://davidinatl.gumroad.com/l/before-the-break)
+| | Course | Price |
+|--|--------|-------|
+| Level 1 | [Before the Break — Practitioner's Field Guide](https://davidinatl.gumroad.com/l/before-the-break) | $197 |
+| Level 2 | [AI Failure Taxonomy — Enterprise Curriculum](https://davidinatl.gumroad.com/l/ai-failure-taxonomy) | $197 |
+| Level 3 | [AI Fault Taxonomist Certification](https://davidinatl.gumroad.com/l/ai-fault-taxonomist-certification) | $197 |
+| Bundle | [All Three — Complete Curriculum](https://davidinatl.gumroad.com/l/ai-fault-taxonomy-complete-bundle) | $441 (save $150) |
 
-Bundled: [Both](https://davidinatl.gumroad.com/l/ai-failure-taxonomy-bundle)
+Level 1 teaches the frameworks. Level 2 teaches the AFT on top of them. Level 3 certification proves you can use both — three real-world incident reports, personally reviewed by the framework creator, signed certificate and permanent credential ID.
 
 ---
 
