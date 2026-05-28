@@ -314,7 +314,7 @@ A REST API that allows any agent framework — LangGraph, CrewAI, AutoGen, custo
 
 ## About the Author
 
-**David Macon** — 38+ years telecommunications and network engineering. AWS Certified AI Practitioner (AIF-C01). Author of the only two AI Fault Taxonomy courses in existence. Named Haven AI's best beta tester, April 2026. U.S. Army veteran.
+**David Macon** — 38+ years telecommunications and network engineering. Certified AI Fault Taxonomist, AWS Certified AI Practitioner (AIF-C01). Author of the only AI Fault Taxonomy courses in existence. Named Haven AI's best beta tester, April 2026. U.S. Army veteran.
 
 FailGuard was built solo, on a laptop. From a Haven AI bug report on April 27, 2026 to a 96.1% F1 validated system, a formal published paper, and a named architectural category — in 17 days.
 
