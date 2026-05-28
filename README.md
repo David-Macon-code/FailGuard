@@ -54,6 +54,10 @@ The only AI Fault Taxonomy curriculum in existence.
 
 Level 1 teaches the frameworks. Level 2 teaches the AFT on top of them. Level 3 certification proves you can use both — three real-world incident reports, personally reviewed by the framework creator, signed certificate and permanent credential ID.
 
+**Credential Registry:** [AFT Certified Taxonomist Registry](https://david-macon-code.github.io/aft-registry/) — public registry of all certified AI Fault Taxonomists.
+
+**Verify a credential:** credentials are issued via [Credential.net](https://credential.net) and verifiable by employers and institutions.
+
 ---
 
 ## The Origin
