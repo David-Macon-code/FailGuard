@@ -94,7 +94,7 @@ All prompts are independent. No prompt appears in more than one batch. Each batc
 
 Agentic AI is scaling faster than its safety nets.
 
-- **Colorado AI law** (effective January 01, 2027) — up to **$20,000 per violation** for high-risk AI systems in employment, housing, and credit. Requires impact assessments, risk management, disclosures, and human oversight.
+- **Colorado AI law** (effective January 01, 2027) — Up to $20,000 per violation for automated decision-making systems used in consequential decisions (e.g., employment, housing, credit). Requires notices, explanations for adverse decisions, appeal/human review rights, and record retention.
 - **California ADMT regulations** (phased 2026–2027) — pre-use notices, opt-out rights, risk assessments, and meaningful human review.
 - **EU AI Act** (August 2, 2026) — high-risk AI obligations including conformity assessment, human oversight, and post-market monitoring.
 - **Shadow AI breaches** add ~$670K extra per incident on average.
@@ -278,8 +278,6 @@ FailGuard was designed with the 2026 regulatory landscape in mind.
 **Colorado AI law SB 26-189** (effective January 1, 2027) Colorado AI law SB 26-189 (effective January 1, 2027). Replaces the original 2024 version, which never went into effect. Applies to Automated Decision-Making Technology (ADMT) that plays a significant role in consequential decisions (hiring, housing, lending, insurance, healthcare, education). Requires pre-use notice, adverse decision disclosures, explanation and appeal rights (including human review), and record retention. Enforced by the Attorney General as a deceptive trade practice. Up to $20,000 per violation. Significantly scaled back from the original: impact assessments and risk management program requirements are gone.
 
 ---
-
-No dashes anywhere. That is the one.
 
 **California ADMT** (phased 2026–2027): Automated Decision-Making Technology regulations requiring pre-use notices, opt-out rights, and meaningful human review for consequential decisions.
 
