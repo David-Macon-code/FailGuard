@@ -277,7 +277,7 @@ python -m streamlit run streamlit_app.py
 
 FailGuard was designed with the 2026 regulatory landscape in mind.
 
-**Colorado AI law SB 26-189** (effective January 1, 2027) Colorado AI law SB 26-189 (effective January 1, 2027). Replaces the original 2024 version, which never went into effect. Applies to Automated Decision-Making Technology (ADMT) that plays a significant role in consequential decisions (hiring, housing, lending, insurance, healthcare, education). Requires pre-use notice, adverse decision disclosures, explanation and appeal rights (including human review), and record retention. Enforced by the Attorney General as a deceptive trade practice. Up to $20,000 per violation. Significantly scaled back from the original: impact assessments and risk management program requirements are gone.
+**Colorado AI law SB 26-189** (effective January 1, 2027) Replaces the original 2024 version, which never went into effect. Applies to Automated Decision-Making Technology (ADMT) that plays a significant role in consequential decisions (hiring, housing, lending, insurance, healthcare, education). Requires pre-use notice, adverse decision disclosures, explanation and appeal rights (including human review), and record retention. Enforced by the Attorney General as a deceptive trade practice. Up to $20,000 per violation. Significantly scaled back from the original: impact assessments and risk management program requirements are gone.
 
 ---
 
