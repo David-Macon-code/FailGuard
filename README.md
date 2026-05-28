@@ -275,7 +275,11 @@ python -m streamlit run streamlit_app.py
 
 FailGuard was designed with the 2026 regulatory landscape in mind.
 
-**Colorado AI law SB 26-189** (effective January 1, 2027) Replaces the original 2024 Colorado AI Act. Focuses on automated decision-making technology (ADMT) that materially influences "consequential decisions" (e.g., employment, housing, credit/lending, insurance, healthcare, education). Requires pre-use notices, disclosures for adverse decisions, explanation and appeal rights (including human review), and record retention. Up to $20,000 per violation (enforced by the Attorney General as a deceptive trade practice). Significantly scales back earlier requirements for impact assessments and risk management programs.
+**Colorado AI law SB 26-189** (effective January 1, 2027) Colorado AI law SB 26-189 (effective January 1, 2027). Replaces the original 2024 version, which never went into effect. Applies to Automated Decision-Making Technology (ADMT) that plays a significant role in consequential decisions (hiring, housing, lending, insurance, healthcare, education). Requires pre-use notice, adverse decision disclosures, explanation and appeal rights (including human review), and record retention. Enforced by the Attorney General as a deceptive trade practice. Up to $20,000 per violation. Significantly scaled back from the original: impact assessments and risk management program requirements are gone.
+
+---
+
+No dashes anywhere. That is the one.
 
 **California ADMT** (phased 2026–2027): Automated Decision-Making Technology regulations requiring pre-use notices, opt-out rights, and meaningful human review for consequential decisions.
 
@@ -295,7 +299,7 @@ FailGuard's pre-execution interception and audit trail directly support complian
 - [x] Streamlit UI (demo-ready)
 - [x] AI Fault Taxonomy (AFT) formal publication
 - [x] Compliance Reporter (structured regulatory artifacts from audit database)
-- [x] AFT course updates
+- [x] AFT courses completed and published
 - [ ] Enterprise API wrapper (REST API for any agent framework)
 
 ---
