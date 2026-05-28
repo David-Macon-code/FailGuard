@@ -222,8 +222,6 @@ The AFT covers 24 failure modes across 7 categories:
 
 The full taxonomy (`taxonomy_config.yaml.real`) is proprietary. The public version (`taxonomy_config_v2.yaml`) is included in this repository.
 
-Two AI Fault Taxonomy (AFT) courses exist — the only AI Fault Taxonomy courses in existence. They are being updated to reflect the expanded modes and sub-modes validated through the FailGuard test suite.
-
 ---
 
 ## Audit Database and Feedback Footprint
@@ -316,7 +314,7 @@ A REST API that allows any agent framework — LangGraph, CrewAI, AutoGen, custo
 
 ## About the Author
 
-**David Macon** — 38+ years telecommunications and network engineering. Certified AI Fault Taxonomist, AWS Certified AI Practitioner (AIF-C01). Author of the only AI Fault Taxonomy courses in existence. Named Haven AI's best beta tester, April 2026. U.S. Army veteran.
+**David Macon** — 38+ years telecommunications and network engineering. Certified AI Fault Taxonomist (AFT-001), AWS Certified AI Practitioner (AIF-C01). Author of the only AI Fault Taxonomy courses in existence. Named Haven AI's best beta tester, April 2026. U.S. Army veteran.
 
 FailGuard was built solo, on a laptop. From a Haven AI bug report on April 27, 2026 to a 96.1% F1 validated system, a formal published paper, and a named architectural category — in 17 days.
 
