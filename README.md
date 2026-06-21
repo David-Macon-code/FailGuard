@@ -101,7 +101,7 @@ Agentic AI is scaling faster than its safety nets.
 
 - **Colorado AI law** (effective January 01, 2027) — Up to $20,000 per violation for automated decision-making systems used in consequential decisions (e.g., employment, housing, credit). Requires notices, explanations for adverse decisions, appeal/human review rights, and record retention.
 - **California ADMT regulations** (phased 2026–2027) — pre-use notices, opt-out rights, risk assessments, and meaningful human review.
-- **EU AI Act** (August 2, 2026) — high-risk AI obligations including conformity assessment, human oversight, and post-market monitoring.
+- **EU AI Act** (high-risk obligations: Dec 2, 2027 for standalone systems, Aug 2, 2028 for AI embedded in regulated products) — conformity assessment, human oversight, and post-market monitoring. Deadlines deferred over a year from the original August 2026 date via the May 2026 Digital Omnibus agreement.
 - **Shadow AI breaches** add ~$670K extra per incident on average.
 - **40–95% of agentic AI projects** never reach reliable production.
 
@@ -304,7 +304,7 @@ FailGuard was designed with the 2026 regulatory landscape in mind.
 
 **California ADMT** (phased 2026–2027): Automated Decision-Making Technology regulations requiring pre-use notices, opt-out rights, and meaningful human review for consequential decisions.
 
-**EU AI Act** (August 2, 2026): High-risk AI systems require conformity assessment, technical documentation, human oversight, and post-market monitoring.
+**EU AI Act**: High-risk AI systems require conformity assessment, technical documentation, human oversight, and post-market monitoring. Originally set for August 2, 2026, high-risk obligations were deferred via the May 2026 Digital Omnibus agreement to December 2, 2027 for standalone high-risk systems (Annex III — employment, credit, law enforcement, education, etc.) and August 2, 2028 for AI embedded in regulated products (Annex I — medical devices, machinery, vehicles, etc.).
 
 FailGuard's pre-execution interception and audit trail directly support compliance with all three frameworks — every blocked action is logged with the failure mode, similarity scores, reranker verdict, plain English reason, and applicable regulatory flags.
 
