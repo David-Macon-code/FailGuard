@@ -41,7 +41,8 @@ def reset():
 
 
 def write_sample_log(n=5):
-    writer = EvidentiaryLogWriter(LOG_PATH, private_key_path=PRIV_KEY, public_key_path=PUB_KEY)
+    writer = EvidentiaryLogWriter(LOG_PATH, private_key_path=PRIV_KEY, public_key_path=PUB_KEY,
+                                   async_write=False)
     for i in range(n):
         writer.append({
             "idx": i,
@@ -135,7 +136,8 @@ def run():
     target = rows[2]
     business = {k: target[k] for k in BUSINESS_FIELDNAMES}
     business["status"] = "INTERVENE"
-    new_hash = compute_entry_hash(business, target["timestamp_utc"], target["prev_hash"])
+    new_hash = compute_entry_hash(business, target["timestamp_utc"], target["prev_hash"],
+                                   target.get("sig_algorithm", "ed25519"))
     new_sig = forged_priv.sign(bytes.fromhex(new_hash)).hex()
     rows[2]["status"] = "INTERVENE"
     rows[2]["entry_hash"] = new_hash
@@ -159,6 +161,129 @@ def run():
         ok = False
         detail = str(e)
     results.append(("6. Log remains directly minable (pandas)", ok, detail))
+
+    # --- Test 7: async mode doesn't block the caller ---
+    reset()
+    import time
+    writer = EvidentiaryLogWriter(LOG_PATH, private_key_path=PRIV_KEY, public_key_path=PUB_KEY,
+                                   async_write=True)
+    t0 = time.perf_counter()
+    writer.append({"idx": 0, "prompt": "p0", "status": "INTERVENE"})
+    elapsed_ms = (time.perf_counter() - t0) * 1000
+    # append() should return in well under a millisecond -- it's just a
+    # queue.put(), no signing, no disk I/O. Generous threshold (5ms) to
+    # avoid CI flakiness while still proving it's not doing fsync inline.
+    ok = elapsed_ms < 5.0
+    results.append(("7. append() returns near-instantly in async mode", ok,
+                     f"{elapsed_ms:.3f}ms (threshold: 5ms)"))
+
+    # --- Test 8: flush() actually waits for the write to complete ---
+    writer.flush()
+    r = verify_log(LOG_PATH, PUB_KEY)
+    ok = r.ok and r.rows_checked == 1
+    results.append(("8. flush() guarantees the write landed before returning", ok, str(r)))
+
+    # --- Test 9: concurrent rapid-fire appends still produce a valid, ---
+    # --- correctly-ordered chain (the actual race-condition claim) -----
+    reset()
+    writer = EvidentiaryLogWriter(LOG_PATH, private_key_path=PRIV_KEY, public_key_path=PUB_KEY,
+                                   async_write=True)
+    import threading as _threading
+    N_THREADS = 8
+    N_PER_THREAD = 15
+
+    def hammer(thread_id):
+        for i in range(N_PER_THREAD):
+            writer.append({"idx": f"{thread_id}-{i}", "prompt": f"thread {thread_id} item {i}",
+                            "status": "SAFE" if i % 2 == 0 else "INTERVENE"})
+
+    threads = [_threading.Thread(target=hammer, args=(t,)) for t in range(N_THREADS)]
+    for t in threads: t.start()
+    for t in threads: t.join()
+    writer.flush()
+
+    r = verify_log(LOG_PATH, PUB_KEY)
+    expected_count = N_THREADS * N_PER_THREAD
+    ok = r.ok and r.rows_checked == expected_count
+    failed = writer.get_failed_writes()
+    detail = f"{r}, {N_THREADS} threads x {N_PER_THREAD} writes = {expected_count} expected, " \
+             f"{len(failed)} failed writes"
+    results.append(("9. Concurrent writes from 8 threads -> valid ordered chain, zero corruption",
+                     ok and len(failed) == 0, detail))
+
+    # --- Test 10: tampering with the RECORDED ALGORITHM itself is caught ---
+    # (proves sig_algorithm is actually part of the hashed payload, not just
+    # an unprotected metadata column)
+    reset()
+    write_sample_log(5)
+    rows = read_rows()
+    rows[2]["sig_algorithm"] = "some_future_pq_scheme"  # tamper with the claimed algorithm only
+    write_rows(rows)
+    r = verify_log(LOG_PATH, PUB_KEY)
+    ok = (not r.ok) and r.first_failure_row == 3
+    results.append(("10. Tampering with sig_algorithm field alone is detected", ok, str(r)))
+
+    # --- Test 11: a genuinely different second scheme coexists in the ---
+    # --- same chain (the actual proof the abstraction/seam works) -------
+    reset()
+    from failguard_evidentiary_log import SignatureScheme, SIGNATURE_SCHEMES
+    from cryptography.hazmat.primitives.asymmetric import rsa, padding
+    from cryptography.hazmat.primitives import hashes, serialization as _ser
+
+    class RSATestScheme(SignatureScheme):
+        """A second, real, independent algorithm -- not Ed25519 -- used here
+        purely to prove the registry/dispatch mechanism genuinely supports
+        more than one scheme. Stand-in for a future real PQC scheme."""
+        algorithm_id = "rsa_test"
+
+        def generate_private_key(self):
+            return rsa.generate_private_key(public_exponent=65537, key_size=2048)
+
+        def serialize_private_key(self, key) -> bytes:
+            return key.private_bytes(_ser.Encoding.PEM, _ser.PrivateFormat.PKCS8, _ser.NoEncryption())
+
+        def deserialize_private_key(self, data: bytes):
+            return _ser.load_pem_private_key(data, password=None)
+
+        def public_key_from_private(self, private_key):
+            return private_key.public_key()
+
+        def serialize_public_key(self, key) -> bytes:
+            return key.public_bytes(_ser.Encoding.PEM, _ser.PublicFormat.SubjectPublicKeyInfo)
+
+        def deserialize_public_key(self, data: bytes):
+            return _ser.load_pem_public_key(data)
+
+        def sign(self, private_key, message: bytes) -> bytes:
+            return private_key.sign(message, padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
+                                     salt_length=padding.PSS.MAX_LENGTH), hashes.SHA256())
+
+        def verify(self, public_key, signature: bytes, message: bytes) -> None:
+            public_key.verify(signature, message,
+                               padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
+                                           salt_length=padding.PSS.MAX_LENGTH), hashes.SHA256())
+
+    SIGNATURE_SCHEMES["rsa_test"] = RSATestScheme()
+
+    # First two entries signed under Ed25519 (the default)
+    w1 = EvidentiaryLogWriter(LOG_PATH, private_key_path=PRIV_KEY, public_key_path=PUB_KEY,
+                               async_write=False)
+    w1.append({"idx": 0, "prompt": "ed25519 entry A", "status": "SAFE"})
+    w1.append({"idx": 1, "prompt": "ed25519 entry B", "status": "SAFE"})
+
+    # Next two entries signed under the new RSA scheme -- same file, continuing the SAME chain
+    rsa_priv = f"{TEST_DIR}/keys/rsa_key.pem"
+    rsa_pub = f"{TEST_DIR}/keys/rsa_key.pub"
+    w2 = EvidentiaryLogWriter(LOG_PATH, private_key_path=rsa_priv, public_key_path=rsa_pub,
+                               async_write=False, scheme=RSATestScheme())
+    w2.append({"idx": 2, "prompt": "rsa entry C", "status": "INTERVENE"})
+    w2.append({"idx": 3, "prompt": "rsa entry D", "status": "SAFE"})
+
+    # Verify the WHOLE mixed-algorithm chain in one pass, supplying both public keys
+    r = verify_log(LOG_PATH, public_key_paths={"ed25519": PUB_KEY, "rsa_test": rsa_pub})
+    ok = r.ok and r.rows_checked == 4
+    results.append(("11. Mixed-algorithm chain (Ed25519 + a second real scheme) verifies as one chain",
+                     ok, str(r)))
 
     # --- Report ---
     print("\n" + "=" * 70)

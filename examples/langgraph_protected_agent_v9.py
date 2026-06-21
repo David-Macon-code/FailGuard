@@ -506,6 +506,12 @@ if __name__ == "__main__":
     try:
         log_writer = EvidentiaryLogWriter(csv_path)
         log_writer.append_many(results)
+        # This is a short-lived script, not a long-running server -- without
+        # an explicit flush, the script could exit (killing the daemon
+        # background thread) before all async writes have landed on disk,
+        # silently losing batch results. Streamlit doesn't need this because
+        # it stays alive; this script doesn't have that luxury.
+        log_writer.flush()
         print(f"\nFull results saved to: {csv_path}")
         print(f"(hash-chained + signed — verify with: "
               f"python src/supervisor/failguard_evidentiary_log.py verify {csv_path})")

@@ -580,6 +580,7 @@ elif page == "📋 Audit Trail":
     )
 
     if os.path.exists(STREAMLIT_LOG_PATH):
+        evidentiary_log.flush()  # ensure any just-submitted evaluation has landed before verifying
         chain_result = verify_log(STREAMLIT_LOG_PATH, DEFAULT_PUBLIC_KEY_PATH)
 
         vcol1, vcol2, vcol3 = st.columns(3)
