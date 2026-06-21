@@ -34,6 +34,12 @@ load_dotenv()
 
 from src.supervisor.failguard_supervisor_v7 import FailGuardSupervisor, EvaluationResult
 from src.supervisor.failguard_db import FailGuardDB
+from src.supervisor.failguard_evidentiary_log import (
+    EvidentiaryLogWriter, verify_log, load_public_key,
+    DEFAULT_PUBLIC_KEY_PATH, ALL_FIELDNAMES,
+)
+from cryptography.hazmat.primitives import serialization
+import csv
 from langchain_xai import ChatXAI
 from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -176,7 +182,10 @@ st.markdown("""
 # ---------------------------------------------------------------
 # Cached resources
 # ---------------------------------------------------------------
-TAXONOMY_PATH = os.path.join(os.path.dirname(__file__), "config/taxonomy_config_v2.yaml")
+TAXONOMY_PATH = os.environ.get(
+    "FAILGUARD_TAXONOMY_PATH",
+    os.path.join(os.path.dirname(__file__), "config/taxonomy_config_v2.yaml"),
+)
 
 @st.cache_resource
 def get_supervisor():
@@ -195,6 +204,43 @@ def get_llm():
 def get_db():
     return FailGuardDB()
 
+STREAMLIT_LOG_PATH = os.path.join(os.path.dirname(__file__), "logs", "streamlit_evidentiary_log.csv")
+
+@st.cache_resource
+def get_evidentiary_log():
+    return EvidentiaryLogWriter(STREAMLIT_LOG_PATH)
+
+def evaluation_result_to_log_row(result, prompt_text, check_type, agent_response_text="", session_idx=""):
+    """
+    Maps a FailGuardSupervisor EvaluationResult (live demo usage -- no ground
+    truth label available, unlike batch test runs) onto the evidentiary log's
+    business field schema. Fields with no live-demo equivalent (label,
+    label_str, correct) are left blank rather than guessed at.
+    """
+    return {
+        "idx": session_idx,
+        "prompt": prompt_text,
+        "label": "",
+        "label_str": "",
+        "status": result.status,
+        "correct": "",
+        "similarity": result.similarity_score,
+        "benign_sim": result.benign_similarity_score,
+        "risky_votes": result.risky_vote_count,
+        "benign_votes": result.benign_vote_count,
+        "confidence": result.confidence,
+        "matched_mode": result.matched_mode,
+        "matched_category": result.matched_category,
+        "triggered_on": result.triggered_on,
+        "reranked": result.reranked,
+        "reranker_verdict": result.reranker_verdict,
+        "reranker_reason": result.reranker_reason,
+        "reranker_q6": result.reranker_q6,
+        "grok_invoked": bool(agent_response_text),
+        "grok_response": agent_response_text,
+        "explanation": f"[{check_type}] {result.explanation}",
+    }
+
 GROK_SYSTEM_PROMPT = """You are a customer support agent. You help customers with
 policy questions, account lookups (after identity verification), standard service
 requests, and non-sensitive information.
@@ -208,6 +254,7 @@ Respond with ONE clear, specific proposed action."""
 supervisor = get_supervisor()
 llm        = get_llm()
 db         = get_db()
+evidentiary_log = get_evidentiary_log()
 
 # ---------------------------------------------------------------
 # Sidebar — navigation and stats
@@ -329,6 +376,15 @@ if page == "🔬 Live Evaluation":
                 environment="demo",
             )
 
+            # Hash-chained, signed evidentiary log (same data, tamper-evident)
+            evidentiary_log.append(
+                evaluation_result_to_log_row(
+                    pre_result, prompt_input, check_type="pre_check",
+                    session_idx=st.session_state.get("eval_counter", 0),
+                )
+            )
+            st.session_state["eval_counter"] = st.session_state.get("eval_counter", 0) + 1
+
             st.markdown("---")
 
             # ---- LAYER 1 — Embedding ----
@@ -426,6 +482,15 @@ if page == "🔬 Live Evaluation":
                     environment="demo",
                 )
 
+                evidentiary_log.append(
+                    evaluation_result_to_log_row(
+                        post_result, prompt_input, check_type="post_check",
+                        agent_response_text=agent_text,
+                        session_idx=st.session_state.get("eval_counter", 0),
+                    )
+                )
+                st.session_state["eval_counter"] = st.session_state.get("eval_counter", 0) + 1
+
                 if post_result.status == "INTERVENE":
                     st.markdown(
                         f'<div class="verdict-block verdict-intervene">'
@@ -501,6 +566,100 @@ elif page == "📋 Audit Trail":
 
     except Exception as e:
         st.error(f"Database error: {e}")
+
+    # -----------------------------------------------------------
+    # Evidentiary Chain Verification
+    # -----------------------------------------------------------
+    st.markdown("---")
+    st.markdown("## 🔒 Evidentiary Chain Verification")
+    st.markdown(
+        "Every evaluation above is **also** written to a separate, hash-chained, "
+        "digitally-signed log — independent of this database and this application. "
+        "Tampering with any historical entry is mathematically detectable by anyone "
+        "holding the public key, without needing to trust FailGuard or its operator."
+    )
+
+    if os.path.exists(STREAMLIT_LOG_PATH):
+        chain_result = verify_log(STREAMLIT_LOG_PATH, DEFAULT_PUBLIC_KEY_PATH)
+
+        vcol1, vcol2, vcol3 = st.columns(3)
+        with vcol1:
+            st.metric("Entries in chain", chain_result.rows_checked)
+        with vcol2:
+            if chain_result.ok:
+                st.success("✅ Chain verified — intact")
+            else:
+                st.error(f"⛔ Tampering detected at row {chain_result.first_failure_row}")
+        with vcol3:
+            try:
+                pub_bytes = load_public_key(DEFAULT_PUBLIC_KEY_PATH).public_bytes(
+                    encoding=serialization.Encoding.Raw,
+                    format=serialization.PublicFormat.Raw,
+                )
+                st.metric("Signing key fingerprint", pub_bytes.hex()[:16] + "…")
+            except Exception:
+                st.metric("Signing key fingerprint", "n/a")
+
+        if not chain_result.ok:
+            st.error(chain_result.failure_reason)
+
+        st.markdown("#### Recent chain linkage")
+        st.caption(
+            "Each row's `prev_hash` exactly matches the prior row's `entry_hash` — "
+            "that link is the cryptographic chain. Click any row to see it."
+        )
+        with open(STREAMLIT_LOG_PATH, newline="", encoding="utf-8") as f:
+            all_log_rows = list(csv.DictReader(f))
+
+        for i, r in enumerate(all_log_rows[-5:]):
+            row_num = len(all_log_rows) - len(all_log_rows[-5:]) + i + 1
+            with st.expander(f"Row {row_num} — {r.get('status', '')} — {r.get('timestamp_utc', '')[:19]}"):
+                st.code(
+                    f"prev_hash:   {r['prev_hash']}\n"
+                    f"entry_hash:  {r['entry_hash']}\n"
+                    f"signature:   {r['signature'][:32]}...",
+                    language="text",
+                )
+
+        st.markdown("#### 🧪 Live tamper-detection demo")
+        st.caption(
+            "Runs on a throwaway copy — your real log is never touched. "
+            "Simulates someone editing a historical record after the fact."
+        )
+        if st.button("Run tamper-detection demo"):
+            if len(all_log_rows) < 1:
+                st.warning("Run at least one evaluation on the Live Evaluation tab first.")
+            else:
+                import shutil, tempfile
+                tmp_dir = tempfile.mkdtemp()
+                tmp_log = os.path.join(tmp_dir, "tampered_copy.csv")
+                shutil.copy(STREAMLIT_LOG_PATH, tmp_log)
+
+                target_idx = len(all_log_rows) // 2
+                tampered_rows = list(all_log_rows)
+                original_status = tampered_rows[target_idx]["status"]
+                tampered_rows[target_idx]["status"] = (
+                    "SAFE" if original_status == "INTERVENE" else "INTERVENE"
+                )
+                with open(tmp_log, "w", newline="", encoding="utf-8") as f:
+                    writer = csv.DictWriter(f, fieldnames=ALL_FIELDNAMES)
+                    writer.writeheader()
+                    writer.writerows(tampered_rows)
+
+                tamper_result = verify_log(tmp_log, DEFAULT_PUBLIC_KEY_PATH)
+                st.warning(
+                    f"Simulated edit: row {target_idx + 1}'s status silently changed "
+                    f"from **{original_status}** to **{tampered_rows[target_idx]['status']}**."
+                )
+                st.code(str(tamper_result), language="text")
+                if not tamper_result.ok:
+                    st.success("Verification caught it immediately — this is what makes the log legally defensible.")
+                else:
+                    st.error("Verification did not catch the change — this would need investigation.")
+
+                shutil.rmtree(tmp_dir)
+    else:
+        st.info("No evidentiary log yet — run an evaluation on the Live Evaluation tab to start the chain.")
 
 
 # ---------------------------------------------------------------

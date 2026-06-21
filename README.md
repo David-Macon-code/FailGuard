@@ -179,6 +179,7 @@ Four files. No cloud dependencies for the core embedding layer.
 | `src/supervisor/failguard_supervisor_v7.py` | Dual FAISS index, 44 benign anchors, decision logic |
 | `src/supervisor/failguard_db.py` | Async audit database, plain English compliance summaries |
 | `src/supervisor/failguard_analyzer.py` | Miss Analyzer CLI, Feedback Footprint |
+| `src/supervisor/failguard_evidentiary_log.py` | Hash-chained, signed evidentiary logging (tamper-evident audit trail) |
 | `examples/langgraph_protected_agent_v9.py` | Full LangGraph pipeline, auto miss detection, CSV logging |
 | `streamlit_app.py` | Streamlit demo UI — 4 panels, live database stats |
 
@@ -189,6 +190,7 @@ Four files. No cloud dependencies for the core embedding layer.
 | Agent LLM | Grok-3 via LangChain XAI |
 | Vector store | FAISS (local, no cloud) |
 | Audit database | SQLite (async writes, zero latency impact) |
+| Evidentiary signing | Ed25519, local key generation (`cryptography` library) |
 
 ---
 
@@ -243,6 +245,24 @@ python src/supervisor/failguard_analyzer.py --summary
 python src/supervisor/failguard_analyzer.py --misses
 python src/supervisor/failguard_analyzer.py --report
 ```
+
+---
+
+## Evidentiary Logging
+
+Every evaluation is also written to a separate, append-only log designed to hold up as evidence, not just as an internal record — using a **SHA-256 hash chain with Ed25519 digital signatures**, the same class of cryptographic primitives used in Git, TLS certificates, and Bitcoin, applied here to an audit log rather than a currency or version control system.
+
+- **Tamper-evident**: each entry's hash incorporates the previous entry's hash. Editing, deleting, or reordering any historical row breaks the chain — detectable by anyone, without needing a secret key, by simply recomputing the hashes.
+- **Authenticated**: each entry is signed with an Ed25519 key generated locally, on the machine actually running FailGuard. The private key never leaves that machine and is never held by FailGuard's developer. The public key can be freely shared with auditors, regulators, or counsel so they can verify authenticity independently, without needing FailGuard or its developer to cooperate or even still exist.
+- **Still a normal CSV**: integrity and mining are not in tension here. The log carries the same business fields as the existing audit data (prompt, verdict, similarity scores, vote counts, reranker rationale) plus four extra columns (`timestamp_utc`, `prev_hash`, `entry_hash`, `signature`). Standard analytics tools read it like any other CSV; the extra columns just sit there until someone needs to verify the chain.
+- **Independently verifiable**: `failguard_evidentiary_log.py` ships a standalone verifier that checks chain continuity, content integrity, and signature validity, and pinpoints the exact row if something doesn't match.
+
+```bash
+# Verify any evidentiary log
+python src/supervisor/failguard_evidentiary_log.py verify path/to/log.csv
+```
+
+This is not blockchain-anchored. The chain is independently verifiable by anyone holding the public key, but its history is not yet anchored to an external, publicly-distributed ledger (e.g. via OpenTimestamps) — that would be the next hardening step for organizations that need protection against an attacker with direct filesystem access to the logging machine itself.
 
 ---
 
@@ -301,6 +321,7 @@ FailGuard's pre-execution interception and audit trail directly support complian
 - [x] AI Fault Taxonomy (AFT) formal publication
 - [x] Compliance Reporter (structured regulatory artifacts from audit database)
 - [x] AFT courses completed and published
+- [x] Hash-chained, signed evidentiary logging (tamper-evident audit trail)
 - [ ] Enterprise API wrapper (REST API for any agent framework)
 
 ---

@@ -73,3 +73,4 @@ data/keys/
 data/keys/*
 *.pem
 Certs/
+logs/streamlit_evidentiary_log.csv
