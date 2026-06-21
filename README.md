@@ -13,6 +13,7 @@
 Pre-execution Interception Layer for agentic AI systems.
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20315310.svg)](https://doi.org/10.5281/zenodo.20315310)
+[![Patent Pending](https://img.shields.io/badge/Patent-Pending-orange.svg)]
 [![License: AGPLv3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![Status: Production Validated](https://img.shields.io/badge/status-production%20validated-green)](https://github.com/David-Macon-code/FailGuard)
@@ -327,6 +328,8 @@ GitHub: [David-Macon-code](https://github.com/David-Macon-code)
 ## License
 
 Licensed under the **GNU Affero General Public License v3.0 (AGPLv3)** — see [LICENSE](LICENSE) for details.
+
+**Patent Pending** — U.S. Provisional Patent Application No. 64/094,669, covering the pre-execution interception architecture described in this repository.
 
 The full AI Fault Taxonomy (`taxonomy_config.yaml.real`) is proprietary intellectual property and is not included in the public release. The public version (`taxonomy_config_v2.yaml`) is provided for reference. Contact the repository owner for licensing inquiries.
 

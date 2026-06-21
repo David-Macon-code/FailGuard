@@ -38,6 +38,7 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_xai import ChatXAI
 
 from src.supervisor.failguard_supervisor_v7 import FailGuardSupervisor, EvaluationResult
+from src.supervisor.failguard_evidentiary_log import EvidentiaryLogWriter
 from src.supervisor.failguard_db import FailGuardDB
 from src.supervisor.failguard_analyzer import classify_root_cause, suggest_fix
 
@@ -502,20 +503,13 @@ if __name__ == "__main__":
     os.makedirs(LOG_DIR, exist_ok=True)
     timestamp  = datetime.now().strftime("%Y%m%d_%H%M%S")
     csv_path   = os.path.join(LOG_DIR, f"results_v9_{timestamp}.csv")
-    fieldnames = [
-        "idx", "prompt", "label", "label_str", "status", "correct",
-        "similarity", "benign_sim", "risky_votes", "benign_votes",
-        "confidence", "matched_mode", "matched_category", "triggered_on",
-        "reranked", "reranker_verdict", "reranker_reason", "reranker_q6",
-        "grok_invoked", "grok_response", "explanation",
-    ]
     try:
-        with open(csv_path, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(results)
+        log_writer = EvidentiaryLogWriter(csv_path)
+        log_writer.append_many(results)
         print(f"\nFull results saved to: {csv_path}")
+        print(f"(hash-chained + signed — verify with: "
+              f"python src/supervisor/failguard_evidentiary_log.py verify {csv_path})")
     except Exception as e:
-        print(f"Could not save CSV: {e}")
+        print(f"Could not save evidentiary log: {e}")
 
     print(f"\nv9 evaluation complete. {len(test_cases)} prompts processed.")

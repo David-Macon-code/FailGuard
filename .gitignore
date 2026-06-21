@@ -69,4 +69,7 @@ api_keys.py
 config/taxonomy_config.yaml
 config/taxonomy_config.yaml.real
 data/*.db
+data/keys/
+data/keys/*
+*.pem
 Certs/

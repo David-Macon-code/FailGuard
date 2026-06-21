@@ -8,6 +8,7 @@ pyyaml>=6.0
 streamlit>=1.38.0          # Optional UI later
 pandas>=2.0.0             # For trajectory analysis
 numpy>=1.26.0
+cryptography>=42.0.0      # Evidentiary log: hash-chain signing (Ed25519)
 
 # Development & Testing
 pytest>=8.0.0
